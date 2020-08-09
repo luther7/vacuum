@@ -1,0 +1,12 @@
+#!/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+echo "+++ Starting Minkube"
+minikube start \
+  --kubernetes-version=v1.16.0 \
+  --nodes=1 \
+  --cpus=2 \
+  --memory=8G \
+  --driver=docker

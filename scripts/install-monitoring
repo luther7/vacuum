@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+namespace=grub-bin-bot
+
+
+echo "+++ Add stable helm repo"
+helm repo add stable https://kubernetes-charts.storage.googleapis.com
+
+echo "+++ Add influxdata helm repo"
+helm repo add influxdata https://helm.influxdata.com/
+
+echo "+++ Install or upgrade influxdb helm chart"
+helm upgrade \
+  --install \
+  --namespace "${namespace}" \
+  --create-namespace \
+  --values monitoring/influxdb-values.yaml \
+  influxdb \
+  influxdata/influxdb
+
+echo "+++ Install or upgrade grafana helm chart"
+helm upgrade \
+  --install \
+  --namespace "${namespace}" \
+  --create-namespace \
+  --values monitoring/grafana-values.yaml \
+  grafana \
+  stable/grafana

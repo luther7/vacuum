@@ -5,10 +5,10 @@ from grubbin.console import main
 
 
 def test_example():
-    command = ["run"]
+    command = ["run", "--api-key=1", "--sec-key=1", "--dry-run"]
 
     runner = CliRunner()
     result = runner.invoke(main, command)
 
-    assert "run" in result.output
+    assert "Dry run" in result.output
     assert result.exit_code == 0
