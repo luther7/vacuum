@@ -1,7 +1,7 @@
 # import pytest
 
 from click.testing import CliRunner
-from grubbin.console.application import main
+from grubbin.console import main
 
 
 def test_example():
