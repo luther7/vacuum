@@ -1,12 +1,11 @@
-# grub-bin-bot
+# Grub's Bin-Bot
 ![Tests](https://github.com/rubberydub/grub-bin-bot/workflows/tests/badge.svg)
 
 ---
 
-## Getting Started
+## TODO
 
-```sh
-$ pip install --user poetry
-$ poetry install
-$ poetry run pre-commit install
-```
+### For pylate:
+- [ ] Remove CD's in actions
+- [ ] Simplify directory structure
+- [ ] Add main module
