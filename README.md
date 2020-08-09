@@ -9,3 +9,6 @@
 - [ ] Remove CD's in actions
 - [ ] Simplify directory structure
 - [ ] Add main module
+
+### For automation:
+- [ ] Script to forward ports into minikube

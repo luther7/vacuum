@@ -5,7 +5,7 @@ from grubbin.console import main
 
 
 def test_example():
-    command = ["run", "--api-key=1", "--sec-key=1", "--dry-run"]
+    command = ["run", "--binance-api-key=1", "--binance-security-key=1", "--dry-run"]
 
     runner = CliRunner()
     result = runner.invoke(main, command)
