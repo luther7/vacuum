@@ -24,23 +24,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd pylate
+          cd grub-bin-bot
           poetry config virtualenvs.in-project true
           poetry install
 
       - name: black
         run: |
-          cd pylate
+          cd grub-bin-bot
           poetry run black .
 
       - name: flake8
         run: |
-          cd pylate
+          cd grub-bin-bot
           poetry run flake8
 
       - name: mypy
         run: |
-          cd pylate
+          cd grub-bin-bot
           poetry run mypy .
 
   test:
@@ -65,11 +65,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd pylate
+          cd grub-bin-bot
           poetry config virtualenvs.in-project true
           poetry install
 
       - name: Run tests
         run: |
-          cd pylate
+          cd grub-bin-bot
           poetry run pytest
