@@ -5,10 +5,10 @@ from grubbin.console import main
 
 
 def test_example():
-    command = ["example"]
+    command = ["run"]
 
     runner = CliRunner()
     result = runner.invoke(main, command)
 
-    assert "grubbin example" in result.output
+    assert "run" in result.output
     assert result.exit_code == 0

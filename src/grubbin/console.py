@@ -1,12 +1,14 @@
 import click
 
+from .main import run
+
 
 @click.group()
 def main():
-    """grubbin console"""
+    """grubbin"""
 
 
-@main.command()
-def example():
-    """grubbin example"""
-    print("grubbin example")
+@main.command(name="run")
+def _run():
+    """run"""
+    run()
