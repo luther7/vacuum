@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+namespace=grub-bin-bot
+
+
+echo "+++ Forwarding influxdb port"
+kubectl port-forward --namespace "${namespace}" influxdb-0 8086:8086

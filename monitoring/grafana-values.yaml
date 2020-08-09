@@ -356,41 +356,18 @@ notifiers: {}
 ##
 ## `path` must be /var/lib/grafana/dashboards/<provider_name>
 ##
-dashboardProviders: {}
-#  dashboardproviders.yaml:
-#    apiVersion: 1
-#    providers:
-#    - name: 'default'
-#      orgId: 1
-#      folder: ''
-#      type: file
-#      disableDeletion: false
-#      editable: true
-#      options:
-#        path: /var/lib/grafana/dashboards/default
-
-## Configure grafana dashboard to import
-## NOTE: To use dashboards you must also enable/configure dashboardProviders
-## ref: https://grafana.com/dashboards
-##
-## dashboards per provider, use provider name as key.
-##
-dashboards: {}
-  # default:
-  #   some-dashboard:
-  #     json: |
-  #       $RAW_JSON
-  #   custom-dashboard:
-  #     file: dashboards/custom-dashboard.json
-  #   prometheus-stats:
-  #     gnetId: 2
-  #     revision: 2
-  #     datasource: Prometheus
-  #   local-dashboard:
-  #     url: https://example.com/repository/test.json
-  #   local-dashboard-base64:
-  #     url: https://example.com/repository/test-b64.json
-  #     b64content: true
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
 
 ## Reference to external ConfigMap per provider. Use provider name as key and ConfiMap name as value.
 ## A provider dashboards must be defined either by external ConfigMaps or in values.yaml, not in both.
@@ -540,3 +517,329 @@ sidecar:
 ## Override the deployment namespace
 ##
 namespaceOverride: ""
+
+## Configure grafana dashboard to import
+## NOTE: To use dashboards you must also enable/configure dashboardProviders
+## ref: https://grafana.com/dashboards
+##
+## dashboards per provider, use provider name as key.
+##
+dashboards:
+  default:
+    BTCUSDT:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": "-- Grafana --",
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "gnetId": null,
+          "graphTooltip": 0,
+          "id": 1,
+          "links": [],
+          "panels": [
+            {
+              "aliasColors": {
+                "Close": "dark-green",
+                "High": "dark-purple",
+                "Low": "dark-purple",
+                "Open": "dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {}
+                },
+                "overrides": []
+              },
+              "fill": 0,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 0,
+                "y": 0
+              },
+              "hiddenSeries": false,
+              "id": 2,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 0,
+              "nullPointMode": "null",
+              "percentage": false,
+              "pluginVersion": "7.1.1",
+              "pointradius": 0.5,
+              "points": true,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "alias": "Close",
+                  "fillBelowTo": "Open"
+                },
+                {
+                  "alias": "Open",
+                  "fillBelowTo": "Close"
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "alias": "High",
+                  "groupBy": [
+                    {
+                      "params": [
+                        "$__interval"
+                      ],
+                      "type": "time"
+                    },
+                    {
+                      "params": [
+                        "null"
+                      ],
+                      "type": "fill"
+                    }
+                  ],
+                  "orderByTime": "ASC",
+                  "policy": "default",
+                  "query": "SELECT max(\"high_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)\n",
+                  "rawQuery": true,
+                  "refId": "A",
+                  "resultFormat": "time_series",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "field"
+                      },
+                      {
+                        "params": [],
+                        "type": "mean"
+                      }
+                    ]
+                  ],
+                  "tags": []
+                },
+                {
+                  "alias": "Low",
+                  "groupBy": [
+                    {
+                      "params": [
+                        "$__interval"
+                      ],
+                      "type": "time"
+                    },
+                    {
+                      "params": [
+                        "null"
+                      ],
+                      "type": "fill"
+                    }
+                  ],
+                  "orderByTime": "ASC",
+                  "policy": "default",
+                  "query": "SELECT min(\"low_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)\n",
+                  "rawQuery": true,
+                  "refId": "B",
+                  "resultFormat": "time_series",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "field"
+                      },
+                      {
+                        "params": [],
+                        "type": "mean"
+                      }
+                    ]
+                  ],
+                  "tags": []
+                },
+                {
+                  "alias": "Open",
+                  "groupBy": [
+                    {
+                      "params": [
+                        "$__interval"
+                      ],
+                      "type": "time"
+                    },
+                    {
+                      "params": [
+                        "null"
+                      ],
+                      "type": "fill"
+                    }
+                  ],
+                  "orderByTime": "ASC",
+                  "policy": "default",
+                  "query": "SELECT first(\"open_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)",
+                  "rawQuery": true,
+                  "refId": "C",
+                  "resultFormat": "time_series",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "field"
+                      },
+                      {
+                        "params": [],
+                        "type": "mean"
+                      }
+                    ]
+                  ],
+                  "tags": []
+                },
+                {
+                  "alias": "Close",
+                  "groupBy": [
+                    {
+                      "params": [
+                        "$__interval"
+                      ],
+                      "type": "time"
+                    },
+                    {
+                      "params": [
+                        "null"
+                      ],
+                      "type": "fill"
+                    }
+                  ],
+                  "orderByTime": "ASC",
+                  "policy": "default",
+                  "query": "SELECT last(\"close_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)",
+                  "rawQuery": true,
+                  "refId": "D",
+                  "resultFormat": "time_series",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "field"
+                      },
+                      {
+                        "params": [],
+                        "type": "mean"
+                      }
+                    ]
+                  ],
+                  "tags": []
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Candles",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "format": "short",
+                  "label": null,
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "format": "short",
+                  "label": null,
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            }
+          ],
+          "schemaVersion": 26,
+          "style": "dark",
+          "tags": [],
+          "templating": {
+            "list": []
+          },
+          "time": {
+            "from": "now-15m",
+            "to": "now"
+          },
+          "timepicker": {
+            "refresh_intervals": [
+              "10s",
+              "30s",
+              "1m",
+              "5m",
+              "15m",
+              "30m",
+              "1h",
+              "2h",
+              "1d"
+            ]
+          },
+          "timezone": "",
+          "title": "BTCUSDT",
+          "uid": "L9yuScSMz",
+          "version": 1
+        }
+  #   some-dashboard:
+  #     json: |
+  #       $RAW_JSON
+  #   custom-dashboard:
+  #     file: dashboards/custom-dashboard.json
+  #   prometheus-stats:
+  #     gnetId: 2
+  #     revision: 2
+  #     datasource: Prometheus
+  #   local-dashboard:
+  #     url: https://example.com/repository/test.json
+  #   local-dashboard-base64:
+  #     url: https://example.com/repository/test-b64.json
+  #     b64content: true

@@ -10,5 +10,28 @@
 - [ ] Simplify directory structure
 - [ ] Add main module
 
-### For automation:
-- [ ] Script to forward ports into minikube
+### For grubbin:
+- [ ] Structured logging
+
+
+## Requires
+- Minikube
+- Poetry
+- Binance API Key
+
+
+## Usage
+
+- Start Minikube and install InfluxDB and Grafana:
+```
+scripts/minikube-start
+scripts/install-monitoring
+```
+
+- Run script to pull Candle data and push to InfluxDB:
+```
+poetry run grubbin run --binance-api-key=SNIP --binance-security-key=SNIP
+```
+
+- Log into Grafana at `localhost:3000` (username: admin, password: password).
+- Dashboard is called BTCUSTD.
