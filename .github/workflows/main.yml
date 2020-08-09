@@ -1,0 +1,75 @@
+---
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        run: |
+          pip install poetry
+
+      - name: Install dependencies
+        run: |
+          cd pylate
+          poetry config virtualenvs.in-project true
+          poetry install
+
+      - name: black
+        run: |
+          cd pylate
+          poetry run black .
+
+      - name: flake8
+        run: |
+          cd pylate
+          poetry run flake8
+
+      - name: mypy
+        run: |
+          cd pylate
+          poetry run mypy .
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        run: |
+          pip install poetry
+
+      - name: Install dependencies
+        run: |
+          cd pylate
+          poetry config virtualenvs.in-project true
+          poetry install
+
+      - name: Run tests
+        run: |
+          cd pylate
+          poetry run pytest
