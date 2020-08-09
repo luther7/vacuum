@@ -24,6 +24,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pwd
+          ls -al
           cd grub-bin-bot
           poetry config virtualenvs.in-project true
           poetry install
