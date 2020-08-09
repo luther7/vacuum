@@ -28,6 +28,16 @@ scripts/minikube-start
 scripts/install-monitoring
 ```
 
+- Open a new terminal and forward a port to the Grafana Service:
+```
+forward-grafana-port
+```
+
+- Open a new terminal and forward a port to the InfluxDB Service:
+```
+forward-influxdb-port
+```
+
 - Run script to pull Candle data and push to InfluxDB:
 ```
 poetry run grubbin run --binance-api-key=SNIP --binance-security-key=SNIP
