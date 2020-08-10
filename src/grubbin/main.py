@@ -5,10 +5,9 @@ from functools import partial
 from cryptoxlib.clients.binance.BinanceClient import BinanceClient
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
-from influxdb import InfluxDBClient
 
 from .binance import CandlesSubscription, parse_candle
-from .influxdb import write_candles
+from .postgresql import write_candles
 
 getcontext().prec = 8
 
@@ -25,10 +24,6 @@ async def run(
 ) -> None:
     queue: Queue = Queue()
 
-    influxdb_client: InfluxDBClient = InfluxDBClient(
-        influx_host, influx_port, influx_user, influx_password, influx_database,
-    )
-
     binance_client: BinanceClient = CryptoXLib.create_binance_client(
         binance_api_key, binance_security_key
     )
@@ -42,8 +37,6 @@ async def run(
         ]
     )
 
-    await gather(
-        binance_client.start_websockets(), write_candles(queue, influxdb_client)
-    )
+    await gather(binance_client.start_websockets(), write_candles(queue))
 
     await binance_client.close()

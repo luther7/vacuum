@@ -15,7 +15,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -23,7 +22,11 @@
         "Close": "dark-green",
         "High": "dark-purple",
         "Low": "dark-purple",
-        "Open": "dark-red"
+        "Open": "dark-red",
+        "btcusdt@kline_1m_graph.close": "green",
+        "btcusdt@kline_1m_graph.high": "purple",
+        "btcusdt@kline_1m_graph.low": "purple",
+        "btcusdt@kline_1m_graph.open": "red"
       },
       "bars": false,
       "dashLength": 10,
@@ -54,7 +57,7 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 0,
       "nullPointMode": "null",
       "percentage": false,
@@ -64,12 +67,30 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "Close",
-          "fillBelowTo": "Open"
+          "$$hashKey": "object:113",
+          "alias": "btcusdt@kline_1m_graph.high",
+          "zindex": -3
         },
         {
-          "alias": "Open",
-          "fillBelowTo": "Close"
+          "$$hashKey": "object:114",
+          "alias": "btcusdt@kline_1m_graph.low",
+          "zindex": -3
+        },
+        {
+          "$$hashKey": "object:127",
+          "alias": "btcusdt@kline_1m_graph.open",
+          "fillBelowTo": "btcusdt@kline_1m_graph.close"
+        },
+        {
+          "$$hashKey": "object:144",
+          "alias": "btcusdt@kline_1m_graph.close",
+          "fillBelowTo": "btcusdt@kline_1m_graph.open",
+          "lines": false
+        },
+        {
+          "$$hashKey": "object:157",
+          "alias": "btcusdt@kline_1m_graph.open",
+          "lines": false
         }
       ],
       "spaceLength": 10,
@@ -77,7 +98,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "High",
+          "alias": "",
           "groupBy": [
             {
               "params": [
@@ -94,123 +115,9 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(\"high_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)\n",
+          "query": "SELECT max(high_price) AS high, min(low_price) AS low, first(open_price) AS open, last(close_price) AS close FROM rp_30d.\"btcusdt@kline_1m_graph\" WHERE $timeFilter GROUP BY time(1s) fill(linear)",
           "rawQuery": true,
           "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Low",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT min(\"low_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)\n",
-          "rawQuery": true,
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Open",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT first(\"open_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)",
-          "rawQuery": true,
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Close",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT last(\"close_price\") FROM \"rp_30d\".\"btcusdt@kline_1m\" WHERE $timeFilter GROUP BY time(1s) fill(linear)",
-          "rawQuery": true,
-          "refId": "D",
           "resultFormat": "time_series",
           "select": [
             [
@@ -271,6 +178,7 @@
       }
     }
   ],
+  "refresh": "10s",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],

@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from .utilities import _timestamp
-
 
 @dataclass
 class Candle:
@@ -32,14 +30,11 @@ class Candle:
     #     "B": "123456"   // Ignore
     #   }
     # }
-    stream: str
     event_time: int
-    event_timestamp: str
+    stream: str
     symbol: str
     kline_start_time: int
     kline_close_time: int
-    kline_start_timestamp: str
-    kline_close_timestamp: str
     interval: str
     first_trade_id: int
     last_trade_id: int
@@ -57,14 +52,11 @@ class Candle:
     @classmethod
     def from_ws_api(cls, response: dict) -> "Candle":
         return cls(
-            stream=response["stream"],
             event_time=int(response["data"]["E"]),
-            event_timestamp=_timestamp(int(response["data"]["E"])),
+            stream=response["stream"],
             symbol=response["data"]["s"],
             kline_start_time=int(response["data"]["k"]["t"]),
             kline_close_time=int(response["data"]["k"]["T"]),
-            kline_start_timestamp=_timestamp(int(response["data"]["k"]["t"])),
-            kline_close_timestamp=_timestamp(int(response["data"]["k"]["T"])),
             interval=response["data"]["k"]["i"],
             first_trade_id=int(response["data"]["k"]["f"]),
             last_trade_id=int(response["data"]["k"]["L"]),

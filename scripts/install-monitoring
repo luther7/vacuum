@@ -9,17 +9,17 @@ namespace=grub-bin-bot
 echo "+++ Add stable helm repo"
 helm repo add stable https://kubernetes-charts.storage.googleapis.com
 
-echo "+++ Add influxdata helm repo"
-helm repo add influxdata https://helm.influxdata.com/
+echo "+++ Add bitnami helm repo"
+helm repo add bitnami https://charts.bitnami.com/bitnami
 
-echo "+++ Install or upgrade influxdb helm chart"
+echo "+++ Install or upgrade postgresql helm chart"
 helm upgrade \
   --install \
   --namespace "${namespace}" \
   --create-namespace \
-  --values monitoring/influxdb-values.yaml \
-  influxdb \
-  influxdata/influxdb
+  --values monitoring/postgresql-values.yaml \
+  postgresql \
+  bitnami/postgresql
 
 echo "+++ Install or upgrade grafana helm chart"
 helm upgrade \
