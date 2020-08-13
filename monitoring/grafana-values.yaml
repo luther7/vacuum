@@ -523,7 +523,7 @@ namespaceOverride: ""
 ##
 ## dashboards per provider, use provider name as key.
 ##
-dashboards: {}
+dashboards:
   default:
     BTCUSDT:
       json: |
