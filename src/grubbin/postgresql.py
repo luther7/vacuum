@@ -4,17 +4,20 @@ from dataclasses import astuple
 from asyncpg import Connection
 
 from .models import BinanceTrade
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
 async def insert_binance_trade(queue: Queue, connection: Connection) -> None:
     while True:
         if queue.empty():
-            print("Wait to write Binance Trade")
+            logger.info("Wait to write Binance Trade")
             await sleep(1)
 
         else:
-            print("Writing Binance Trade")
-            print(f"Queue size {queue.qsize()}")
+            logger.info("Writing Binance Trade")
+            logger.info(f"Queue size {queue.qsize()}")
 
             trade: BinanceTrade = await queue.get()
 
