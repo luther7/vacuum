@@ -1,36 +1,23 @@
 from asyncio import Queue, sleep
 from dataclasses import astuple
 
-from asyncpg import Connection, connect
+from asyncpg import Connection
 
-from .models import Candle
+from .models import BinanceTrade
 
 
-async def write_candles(queue: Queue) -> None:
+async def insert_binance_trade(queue: Queue, connection: Connection) -> None:
     while True:
         if queue.empty():
-            print("Wait to write candle")
+            print("Wait to write Binance Trade")
             await sleep(1)
 
         else:
-            print("Writing candle")
+            print("Writing Binance Trade")
+            print(f"Queue size {queue.qsize()}")
 
-            connection: Connection = await connect(
-                user="postgres",
-                password="password",
-                database="binance",
-                host="127.0.0.1",
-            )
+            trade: BinanceTrade = await queue.get()
 
-            candle: Candle = await queue.get()
-
-            print(_candle_record(candle))
             await connection.copy_records_to_table(
-                "candles", records=[_candle_record(candle)]
+                "binance_trade", records=[astuple(trade)]
             )
-
-            await connection.close()
-
-
-def _candle_record(candle: Candle) -> tuple:
-    return astuple(candle)
