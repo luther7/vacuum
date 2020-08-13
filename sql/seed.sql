@@ -1,12 +1,12 @@
-CREATE DATABASE binance;
+CREATE DATABASE grubbin;
 
-\connect binance;
+\connect grubbin;
 
 CREATE TABLE binance_trade (
-  trade_id            bigint   PRIMARY KEY,
-  event_time          bigint   NOT NULL,
-  symbol              text     NOT NULL,
+  id                  bigint   NOT NULL,
+  time                bigint   NOT NULL,
   price               decimal  NOT NULL,
+  symbol              text     NOT NULL,
   quantity            decimal  NOT NULL,
   buyer_order_id      bigint   NOT NULL,
   seller_order_id     bigint   NOT NULL,
@@ -14,4 +14,14 @@ CREATE TABLE binance_trade (
   buyer_market_maker  bigint   NOT NULL
 );
 
-CREATE INDEX ON binance_trade (event_time);
+CREATE INDEX ON binance_trade (time);
+
+CREATE TABLE bitforex_trade (
+  id         bigint   NOT NULL,
+  time       bigint   NOT NULL,
+  price      decimal  NOT NULL,
+  amount     bigint   NOT NULL,
+  direction  bigint   NOT NULL
+);
+
+CREATE INDEX ON bitforex_trade (time);

@@ -19,10 +19,10 @@ class BinanceTrade:
     #   "m": true,        // Is the buyer the market maker?
     #   "M": true         // Ignore
     # }
-    trade_id: int
-    event_time: int
-    symbol: str
+    id: int
+    time: int
     price: Decimal
+    symbol: str
     quantity: Decimal
     buyer_order_id: int
     seller_order_id: int
@@ -32,13 +32,44 @@ class BinanceTrade:
     @classmethod
     def from_ws_api(cls, response: dict) -> "BinanceTrade":
         return cls(
-            trade_id=int(response["data"]["t"]),
-            event_time=int(response["data"]["E"]),
-            symbol=response["data"]["s"],
-            price=Decimal(response["data"]["p"]),
-            quantity=Decimal(response["data"]["q"]),
-            buyer_order_id=int(response["data"]["b"]),
-            seller_order_id=int(response["data"]["a"]),
-            trade_time=int(response["data"]["T"]),
-            buyer_market_maker=bool(response["data"]["m"]),
+            id=int(response["t"]),
+            time=int(response["E"]),
+            price=Decimal(response["p"]),
+            symbol=response["s"],
+            quantity=Decimal(response["q"]),
+            buyer_order_id=int(response["b"]),
+            seller_order_id=int(response["a"]),
+            trade_time=int(response["T"]),
+            buyer_market_maker=bool(response["m"]),
+        )
+
+
+@dataclass
+class BitforexTrade:
+    # https://github.com/githubdev2020/API_Doc_en/wiki/Trading-record-information
+    #
+    # {
+    # 	"success": true,
+    # 	"data": [{
+    # 		"amount": 1,
+    # 		"direction": 1,
+    # 		"price": 990,
+    # 		"tid": "8076",
+    # 		"time": 1516628489676
+    # 	}]
+    # }
+    id: int
+    time: int
+    price: Decimal
+    amount: int
+    direction: int
+
+    @classmethod
+    def from_ws_api(cls, response: dict) -> "BitforexTrade":
+        return cls(
+            id=int(response["tid"]),
+            time=int(response["time"]),
+            price=Decimal(response["price"]),
+            amount=int(response["amount"]),
+            direction=int(response["direction"]),
         )

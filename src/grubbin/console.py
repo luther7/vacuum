@@ -19,15 +19,19 @@ def main() -> None:
 @main.command("run")
 @click.option("--binance-api-key", required=True)
 @click.option("--binance-security-key", required=True)
+@click.option("--bitforex-api-key", required=True)
+@click.option("--bitforex-security-key", required=True)
 @click.option("--postgres-host", default="localhost")
 @click.option("--postgres-port", default=5432)
 @click.option("--postgres-user", default="postgres")
 @click.option("--postgres-password", default="password")
-@click.option("--postgres-database", default="binance")
+@click.option("--postgres-database", default="grubbin")
 @click.option("--dry-run/--no-dry-run", default=False)
 def _run(
     binance_api_key: str,
     binance_security_key: str,
+    bitforex_api_key: str,
+    bitforex_security_key: str,
     postgres_host: str,
     postgres_port: int,
     postgres_user: str,
@@ -45,6 +49,8 @@ def _run(
         run(
             binance_api_key,
             binance_security_key,
+            bitforex_api_key,
+            bitforex_security_key,
             postgres_host,
             postgres_port,
             postgres_user,

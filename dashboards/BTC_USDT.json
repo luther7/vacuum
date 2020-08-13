@@ -49,7 +49,7 @@
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 24,
+        "h": 12,
         "w": 24,
         "x": 0,
         "y": 0
@@ -108,7 +108,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH candles AS (\n  SELECT\n    DISTINCT(floor(event_time/1000/60)::int * 60) AS start_time,\n    max(price) OVER (PARTITION BY floor(event_time/1000/60)::int * 60) AS high,\n    min(price) OVER (PARTITION BY floor(event_time/1000/60)::int * 60) AS low,\n    first_value(price) OVER (PARTITION BY floor(event_time/1000/60)::int * 60) AS open,\n    last_value(price) OVER (PARTITION BY floor(event_time/1000/60)::int * 60) AS close\n  FROM\n    binance_trade\n  WHERE\n    event_time/1000 >= $__unixEpochFrom()\n  AND\n    event_time/1000 <= $__unixEpochTo()\n)\nSELECT\n  generate_series(candles.start_time, (candles.start_time+60)) AS time,\n  max(candles.high) AS c_high,\n  max(candles.low) AS c_low,\n  max(candles.open) AS c_open,\n  max(candles.close) AS c_close\nFROM\n  candles\nGROUP BY\n  time\nORDER BY\n  time\n",
+          "rawSql": "WITH candles AS (\n  SELECT\n    DISTINCT(floor(time/1000/60)::int * 60) AS start_time,\n    max(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS high,\n    min(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS low,\n    first_value(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS open,\n    last_value(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS close\n  FROM\n    binance_trade\n  WHERE\n    time/1000 >= $__unixEpochFrom()\n  AND\n    time/1000 <= $__unixEpochTo()\n)\nSELECT\n  generate_series(candles.start_time, (candles.start_time+60)) AS time,\n  max(candles.high) AS c_high,\n  max(candles.low) AS c_low,\n  max(candles.open) AS c_open,\n  max(candles.close) AS c_close\nFROM\n  candles\nGROUP BY\n  time\nORDER BY\n  time\n",
           "refId": "A",
           "select": [
             [
@@ -134,7 +134,7 @@
             ]
           ],
           "table": "binance_trade",
-          "timeColumn": "event_time",
+          "timeColumn": "time",
           "timeColumnType": "int8",
           "where": [
             {
@@ -149,7 +149,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH averages AS (\n  SELECT\n    DISTINCT(floor(event_time/1000/60)::int * 60) AS time,\n    avg(price) OVER (PARTITION BY floor(event_time/1000/60)::int * 60) AS price\n  FROM\n    binance_trade\n  WHERE\n    event_time/1000 >= $__unixEpochFrom()\n  AND\n    event_time/1000 <= $__unixEpochTo()\n),\nbollinger_bands_21_2 AS (\n  SELECT\n    time AS time,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING) AS average,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING)\n      + (stddev(price) OVER (ORDER BY time ROWS 20 PRECEDING)*2) AS high,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING)\n      - (stddev(price) OVER (ORDER BY time ROWS 20 PRECEDING)*2) AS low\n  FROM\n    averages\n)\nSELECT\n  bollinger_bands_21_2.time AS time,\n  max(bollinger_bands_21_2.average) AS bb_average,\n  max(bollinger_bands_21_2.high) AS bb_high,\n  max(bollinger_bands_21_2.low) AS bb_low\nFROM\n  bollinger_bands_21_2\nGROUP BY\n  time\nORDER BY\n  time\n",
+          "rawSql": "WITH averages AS (\n  SELECT\n    DISTINCT(floor(time/1000/60)::int * 60) AS time,\n    avg(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS price\n  FROM\n    binance_trade\n  WHERE\n    time/1000 >= $__unixEpochFrom()\n  AND\n    time/1000 <= $__unixEpochTo()\n),\nbollinger_bands_21_2 AS (\n  SELECT\n    time AS time,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING) AS average,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING)\n      + (stddev(price) OVER (ORDER BY time ROWS 20 PRECEDING)*2) AS high,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING)\n      - (stddev(price) OVER (ORDER BY time ROWS 20 PRECEDING)*2) AS low\n  FROM\n    averages\n)\nSELECT\n  bollinger_bands_21_2.time AS time,\n  max(bollinger_bands_21_2.average) AS bb_average,\n  max(bollinger_bands_21_2.high) AS bb_high,\n  max(bollinger_bands_21_2.low) AS bb_low\nFROM\n  bollinger_bands_21_2\nGROUP BY\n  time\nORDER BY\n  time\n",
           "refId": "B",
           "select": [
             [
@@ -175,7 +175,201 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "BTC USDT",
+      "title": "Binance",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "bb_21_2_high": "orange",
+        "bb_21_2_low": "orange",
+        "bb_21_2_mean": "orange",
+        "bb_average": "purple",
+        "bb_high": "purple",
+        "bb_low": "purple",
+        "c_close": "green",
+        "c_high": "blue",
+        "c_low": "blue",
+        "c_open": "red",
+        "close": "green",
+        "high": "super-light-blue",
+        "low": "super-light-blue",
+        "mean": "semi-dark-blue",
+        "open": "red"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "postgres",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "c_open",
+          "fillBelowTo": "c_close"
+        },
+        {
+          "alias": "c_close",
+          "fillBelowTo": "c_open"
+        },
+        {
+          "alias": "c_high",
+          "dashes": true
+        },
+        {
+          "alias": "c_low",
+          "dashes": true
+        },
+        {
+          "alias": "bb_high",
+          "dashes": true
+        },
+        {
+          "alias": "bb_low",
+          "dashes": true
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH candles AS (\n  SELECT\n    DISTINCT(floor(time/1000/60)::int * 60) AS start_time,\n    max(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS high,\n    min(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS low,\n    first_value(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS open,\n    last_value(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS close\n  FROM\n    bitforex_trade\n  WHERE\n    time/1000 >= $__unixEpochFrom()\n  AND\n    time/1000 <= $__unixEpochTo()\n)\nSELECT\n  generate_series(candles.start_time, (candles.start_time+60)) AS time,\n  max(candles.high) AS c_high,\n  max(candles.low) AS c_low,\n  max(candles.open) AS c_open,\n  max(candles.close) AS c_close\nFROM\n  candles\nGROUP BY\n  time\nORDER BY\n  time\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "price"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "avg",
+                  "5"
+                ],
+                "type": "moving_window"
+              },
+              {
+                "params": [
+                  "price"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "bitforex_trade",
+          "timeColumn": "time",
+          "timeColumnType": "int8",
+          "where": [
+            {
+              "name": "$__unixEpochFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH averages AS (\n  SELECT\n    DISTINCT(floor(time/1000/60)::int * 60) AS time,\n    avg(price) OVER (PARTITION BY floor(time/1000/60)::int * 60) AS price\n  FROM\n    bitforex_trade\n  WHERE\n    time/1000 >= $__unixEpochFrom()\n  AND\n    time/1000 <= $__unixEpochTo()\n),\nbollinger_bands_21_2 AS (\n  SELECT\n    time AS time,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING) AS average,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING)\n      + (stddev(price) OVER (ORDER BY time ROWS 20 PRECEDING)*2) AS high,\n    avg(price) OVER (ORDER BY time ROWS 20 PRECEDING)\n      - (stddev(price) OVER (ORDER BY time ROWS 20 PRECEDING)*2) AS low\n  FROM\n    averages\n)\nSELECT\n  bollinger_bands_21_2.time AS time,\n  max(bollinger_bands_21_2.average) AS bb_average,\n  max(bollinger_bands_21_2.high) AS bb_high,\n  max(bollinger_bands_21_2.low) AS bb_low\nFROM\n  bollinger_bands_21_2\nGROUP BY\n  time\nORDER BY\n  time\n",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Bitforex",
       "tooltip": {
         "shared": true,
         "sort": 0,
