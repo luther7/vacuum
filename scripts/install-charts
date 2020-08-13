@@ -17,7 +17,7 @@ helm upgrade \
   --install \
   --namespace "${namespace}" \
   --create-namespace \
-  --values monitoring/postgresql-values.yaml \
+  --values charts/postgresql-values.yaml \
   postgresql \
   bitnami/postgresql
 
@@ -26,6 +26,6 @@ helm upgrade \
   --install \
   --namespace "${namespace}" \
   --create-namespace \
-  --values monitoring/grafana-values.yaml \
+  --values charts/grafana-values.yaml \
   grafana \
   stable/grafana

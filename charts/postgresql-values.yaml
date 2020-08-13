@@ -203,16 +203,18 @@ initdbScripts:
      \connect binance;
 
      CREATE TABLE binance_trade (
-       event_time          int      PRIMARY KEY,
+       trade_id            bigint   PRIMARY KEY,
+       event_time          bigint   NOT NULL,
        symbol              text     NOT NULL,
-       trade_id            int      NOT NULL,
        price               decimal  NOT NULL,
-       quantity            int      NOT NULL,
-       buyer_order_id      int      NOT NULL,
-       seller_order_id     int      NOT NULL,
-       trade_time          int      NOT NULL,
-       buyer_market_maker  int      NOT NULL
+       quantity            decimal  NOT NULL,
+       buyer_order_id      bigint   NOT NULL,
+       seller_order_id     bigint   NOT NULL,
+       trade_time          bigint   NOT NULL,
+       buyer_market_maker  bigint   NOT NULL
      );
+
+     CREATE INDEX ON binance_trade (event_time);
 
 ## ConfigMap with scripts to be run at first boot
 ## NOTE: This will override initdbScripts
@@ -258,7 +260,7 @@ service:
   ## Specify the nodePort value for the LoadBalancer and NodePort service types.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
   ##
-  # nodePort:
+  # nodePort: 35432
 
   ## Provide any additional annotations which may be required.
   ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart

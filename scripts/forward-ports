@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+namespace=grub-bin-bot
+
+
+trap 'kill $(jobs -p)' EXIT
+
+echo "+++ Forwarding ports to Minikube services"
+
+for pod in postgresql grafana; do
+  echo "Waiting for ${pod}..."
+  while ! kubectl get pods --namespace grub-bin-bot | grep "${pod}" | grep "Running" >/dev/null; do
+    sleep 1
+  done
+done
+
+kubectl port-forward --namespace "${namespace}" svc/postgresql 5432:5432 &
+kubectl port-forward --namespace "${namespace}" svc/grafana 3000:80 &
+
+read -r -d '' _ </dev/tty

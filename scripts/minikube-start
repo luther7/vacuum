@@ -9,4 +9,5 @@ minikube start \
   --nodes=1 \
   --cpus=2 \
   --memory=8G \
-  --driver=docker
+  --driver=docker \
+  --addons=storage-provisioner,default-storageclass

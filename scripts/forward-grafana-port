@@ -6,9 +6,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 namespace=grub-bin-bot
 
 
-echo "+++ Forwarding grafana port"
-pod_name=$(kubectl get pods --namespace "${namespace}" \
-  -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" \
-  -o jsonpath="{.items[0].metadata.name}")
+echo "+++ Forwarding ports to Minikube services"
+kubectl port-forward --namespace "${namespace}" svc/postgresql 5432:5432 &
+kubectl port-forward --namespace "${namespace}" svc/grafana 3000:3000 &
 
-kubectl --namespace "${namespace}" port-forward "${pod_name}" 3000
+trap 'kill $(jobs -p)' EXIT
