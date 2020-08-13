@@ -3,8 +3,8 @@ from dataclasses import astuple
 
 from asyncpg import Connection
 
-from .models import BinanceTrade
 from .logger import get_logger
+from .models import BinanceTrade
 
 logger = get_logger(__name__)
 

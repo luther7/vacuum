@@ -1,8 +1,10 @@
-from decimal import getcontext
 import asyncio
+from decimal import getcontext
+
 import click
-from .main import run
+
 from .logger import get_logger
+from .main import run
 
 logger = get_logger(__name__)
 

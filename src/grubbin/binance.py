@@ -1,6 +1,7 @@
 from asyncio import Queue
-from .models import BinanceTrade
+
 from .logger import get_logger
+from .models import BinanceTrade
 
 logger = get_logger(__name__)
 

@@ -1,12 +1,14 @@
 from asyncio import Queue, gather
 from functools import partial
-from asyncpg import connect, Connection
+
+from asyncpg import Connection, connect
 from cryptoxlib.clients.binance.BinanceClient import BinanceClient
 from cryptoxlib.clients.binance.BinanceWebsocket import TradeSubscription
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
-from .postgresql import insert_binance_trade
+
 from .binance import parse_trade
+from .postgresql import insert_binance_trade
 
 
 async def run(
