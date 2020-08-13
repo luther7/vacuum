@@ -196,25 +196,8 @@ extraEnv: []
 ## Specify dictionary of scripts to be run at first boot
 ## Alternatively, you can put your scripts under the files/docker-entrypoint-initdb.d directory
 ##
-initdbScripts:
-  init.sql: |
-     CREATE DATABASE binance;
-
-     \connect binance;
-
-     CREATE TABLE binance_trade (
-       trade_id            bigint   PRIMARY KEY,
-       event_time          bigint   NOT NULL,
-       symbol              text     NOT NULL,
-       price               decimal  NOT NULL,
-       quantity            decimal  NOT NULL,
-       buyer_order_id      bigint   NOT NULL,
-       seller_order_id     bigint   NOT NULL,
-       trade_time          bigint   NOT NULL,
-       buyer_market_maker  bigint   NOT NULL
-     );
-
-     CREATE INDEX ON binance_trade (event_time);
+# initdbScripts:
+#   init.sql: ""
 
 ## ConfigMap with scripts to be run at first boot
 ## NOTE: This will override initdbScripts

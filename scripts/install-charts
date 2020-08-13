@@ -17,7 +17,8 @@ helm upgrade \
   --install \
   --namespace "${namespace}" \
   --create-namespace \
-  --values charts/postgresql-values.yaml \
+  --values charts/postgresql.yaml \
+  --set-file initdbScripts."seed\.sql"=sql/seed.sql \
   postgresql \
   bitnami/postgresql
 
@@ -26,6 +27,7 @@ helm upgrade \
   --install \
   --namespace "${namespace}" \
   --create-namespace \
-  --values charts/grafana-values.yaml \
+  --values charts/grafana.yaml \
+  --set-file dashboards.default.BTC_USDT.json=dashboards/BTC_USDT.json \
   grafana \
   stable/grafana

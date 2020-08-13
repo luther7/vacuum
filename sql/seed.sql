@@ -1,3 +1,7 @@
+CREATE DATABASE binance;
+
+\connect binance;
+
 CREATE TABLE binance_trade (
   trade_id            bigint   PRIMARY KEY,
   event_time          bigint   NOT NULL,

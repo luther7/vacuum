@@ -5,14 +5,7 @@
 
 ## TODO
 
-### For pylate:
-- [ ] Remove CD's in actions
-- [ ] Simplify directory structure
-- [ ] Add main module
-- [ ] Structured logging
-
-### For grubbin:
-- [ ] Stored procedures?
+- Stored procedures?
 
 ## Requires
 - Minikube
