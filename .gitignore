@@ -18,3 +18,5 @@ htmlcov/
 .idea/*
 .python-version
 .vscode/*
+
+config.yaml

@@ -1,27 +1,56 @@
-from dataclasses import dataclass
 from decimal import Decimal
+from enum import Enum
+
+import attr
 
 
-@dataclass
-class BinanceTrade:
-    # https://github.com/binance-exchange/binance-official-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams
-    #
-    # {
-    #   "e": "trade",     // Event type
-    #   "E": 123456789,   // Event time
-    #   "s": "BNBBTC",    // Symbol
-    #   "t": 12345,       // Trade ID
-    #   "p": "0.001",     // Price
-    #   "q": "100",       // Quantity
-    #   "b": 88,          // Buyer order ID
-    #   "a": 50,          // Seller order ID
-    #   "T": 123456785,   // Trade time
-    #   "m": true,        // Is the buyer the market maker?
-    #   "M": true         // Ignore
-    # }
+class Exchange(Enum):
+    binance = 1
+    bitforex = 2
+
+
+@attr.s(auto_attribs=True)
+class Trade:
+    """
+    The order of attributes must match the order of the Postgres columns.
+    """
+
+    exchange: Exchange
     id: int
     time: int
     price: Decimal
+
+
+def as_postgres_row(trade: Trade) -> tuple:
+    """
+    The exchange enum is not inserted.
+    """
+
+    return attr.astuple(trade)[:-1]
+
+
+@attr.s(auto_attribs=True)
+class BinanceTrade(Trade):
+    """
+    The order of attributes must match the order of the Postgres columns.
+
+    https://github.com/binance-exchange/binance-official-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams
+
+    {
+      "e": "trade",     // Event type
+      "E": 123456789,   // Event time
+      "s": "BNBBTC",    // Symbol
+      "t": 12345,       // Trade ID
+      "p": "0.001",     // Price
+      "q": "100",       // Quantity
+      "b": 88,          // Buyer order ID
+      "a": 50,          // Seller order ID
+      "T": 123456785,   // Trade time
+      "m": true,        // Is the buyer the market maker?
+      "M": true         // Ignore
+    }
+    """
+
     symbol: str
     quantity: Decimal
     buyer_order_id: int
@@ -29,8 +58,10 @@ class BinanceTrade:
     trade_time: int
     buyer_market_maker: bool
 
+    exchange: Exchange = Exchange.binance
+
     @classmethod
-    def from_ws_api(cls, response: dict) -> "BinanceTrade":
+    def from_websocket_api(cls, response: dict) -> "BinanceTrade":
         return cls(
             id=int(response["t"]),
             time=int(response["E"]),
@@ -44,28 +75,32 @@ class BinanceTrade:
         )
 
 
-@dataclass
-class BitforexTrade:
-    # https://github.com/githubdev2020/API_Doc_en/wiki/Trading-record-information
-    #
-    # {
-    # 	"success": true,
-    # 	"data": [{
-    # 		"amount": 1,
-    # 		"direction": 1,
-    # 		"price": 990,
-    # 		"tid": "8076",
-    # 		"time": 1516628489676
-    # 	}]
-    # }
-    id: int
-    time: int
-    price: Decimal
+@attr.s(auto_attribs=True)
+class BitforexTrade(Trade):
+    """
+    The order of attributes must match the order of the Postgres columns.
+
+    https://github.com/githubdev2020/API_Doc_en/wiki/Trading-record-information
+
+    {
+        "success": true,
+        "data": [{
+            "amount": 1,
+            "direction": 1,
+            "price": 990,
+            "tid": "8076",
+            "time": 1516628489676
+        }]
+    }
+    """
+
     amount: int
     direction: int
 
+    exchange: Exchange = Exchange.bitforex
+
     @classmethod
-    def from_ws_api(cls, response: dict) -> "BitforexTrade":
+    def from_websocket_api(cls, response: dict) -> "BitforexTrade":
         return cls(
             id=int(response["tid"]),
             time=int(response["time"]),

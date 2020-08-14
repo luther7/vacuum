@@ -10,6 +10,7 @@ click = "^7.1.2"
 cryptoxlib-aio = "^3.2.1"
 asyncpg = "^0.21.0"
 python-json-logger = "^0.1.11"
+attrs = "^19.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -5,12 +5,16 @@
 
 ## TODO
 
-- Stored procedures?
+- Stored procedures
+- Secrets from environment
+- Handle interrupts
+
 
 ## Requires
 - Minikube
 - Poetry
 - Binance API Key
+- Bitforex API Key
 
 
 ## Usage
@@ -22,7 +26,7 @@ scripts/reprovision
 
 - Run script to pull Candle data and push to InfluxDB:
 ```
-poetry run grubbin run --binance-api-key=SNIP --binance-security-key=SNIP
+poetry run grubbin run
 ```
 
 - Log into Grafana at `localhost:3000` (username: admin, password: password).
