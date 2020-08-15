@@ -20,3 +20,5 @@ htmlcov/
 .vscode/*
 
 config.yaml
+charts/timescaledb-single
+charts/timescaledb-secrets
