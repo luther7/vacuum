@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+namespace=grub-bin-bot
+
+echo "+++ Waiting for timescaledb..."
+while ! kubectl get pods --namespace grub-bin-bot | grep "timescaledb" | grep "1/1" >/dev/null; do
+  sleep 1
+done
+
+trap 'kill $(jobs -p)' EXIT
+kubectl port-forward --namespace "${namespace}" pod/timescaledb-0 5432:5432 &
+
+sleep 2
+
+echo "+++ Seeding database"
+PGPASSWORD=password psql \
+  --host 127.0.0.1 \
+  --port 5432 \
+  --user postgres \
+  --file sql/seed.sql

@@ -322,16 +322,16 @@ datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
-    - name: postgres
+    - name: timescaledb
       type: postgres
-      url: postgresql.grub-bin-bot:5432
+      url: timescaledb.grub-bin-bot:5432
       database: grubbin
       user: postgres
       secureJsonData:
         password: password
       jsonData:
         sslmode: disable
-        # timescaledb: true
+        timescaledb: true
 
 ## Configure notifiers
 ## ref: http://docs.grafana.org/administration/provisioning/#alert-notification-channels

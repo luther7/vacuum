@@ -5,7 +5,6 @@
 
 ## TODO
 
-- Stored procedures
 - Secrets from environment
 - Handle interrupts
 
@@ -19,12 +18,17 @@
 
 ## Usage
 
-- Provsions Minikube with Postgres and Grafana, and forward ports
+- Prepare Helm Charts:
+```
+scripts/prepare-charts
+```
+
+- Provsions Minikube with TimescaleDB and Grafana, and forward ports:
 ```
 scripts/reprovision
 ```
 
-- Run script to pull Candle data and push to InfluxDB:
+- Run script to pull Candle data and push to Timescale:
 ```
 poetry run grubbin run
 ```

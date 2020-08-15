@@ -7,4 +7,5 @@ minikube delete
 
 ./scripts/minikube-start
 ./scripts/install-charts
+./scripts/seed-database
 ./scripts/forward-ports

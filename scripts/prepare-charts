@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+namespace=grub-bin-bot
+
+echo "+++ Add stable helm repo"
+helm repo add stable https://kubernetes-charts.storage.googleapis.com
+
+echo "+++ Add TimescaleDB helm repo"
+helm repo add \
+  timescaledb \
+  https://raw.githubusercontent.com/timescale/timescaledb-kubernetes/master/charts/repo/
+
+echo "+++ Fetch timescaledb-single helm repo"
+helm fetch \
+  timescaledb/timescaledb-single \
+  --untar \
+  --untardir charts
+
+echo "+++ Generate timescaledb-single chart secrets"
+(echo n; echo n;) | bash charts/timescaledb-single/generate_kustomization.sh \
+  timescaledb \
+  charts/timescaledb-secrets
+
+echo "+++ Override timescaledb-single chart passwords"
+cat << EOF > charts/timescaledb-secrets/credentials.conf
+PATRONI_SUPERUSER_PASSWORD=password
+PATRONI_REPLICATION_PASSWORD=password
+PATRONI_admin_PASSWORD=password
+EOF

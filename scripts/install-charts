@@ -6,27 +6,30 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 namespace=grub-bin-bot
 
 
-echo "+++ Add stable helm repo"
-helm repo add stable https://kubernetes-charts.storage.googleapis.com
+if ! kubectl get namespaces | grep "${namespace}" >/dev/null; then
+  echo "+++ Create namespace ${namespace}"
+  kubectl create namespace "${namespace}"
+fi
 
-echo "+++ Add bitnami helm repo"
-helm repo add bitnami https://charts.bitnami.com/bitnami
+if ! kubectl get secrets --namespace "${namespace}" | grep timescaledb >/dev/null; then
+  echo "+++ Install TimescaleDB secrets"
+  kubectl apply \
+    --namespace "${namespace}" \
+    --kustomize charts/timescaledb-secrets
+fi
 
-echo "+++ Install or upgrade postgresql helm chart"
+echo "+++ Install TimescaleDB Helm chart"
 helm upgrade \
   --install \
   --namespace "${namespace}" \
-  --create-namespace \
-  --values charts/postgresql.yaml \
-  --set-file initdbScripts."seed\.sql"=sql/seed.sql \
-  postgresql \
-  bitnami/postgresql
+  --values charts/timescaledb.yaml \
+  timescaledb \
+  charts/timescaledb-single
 
-echo "+++ Install or upgrade grafana helm chart"
+echo "+++ Install or upgrade Grafana Helm chart"
 helm upgrade \
   --install \
   --namespace "${namespace}" \
-  --create-namespace \
   --values charts/grafana.yaml \
   --set-file dashboards.default.BTC_USDT.json=dashboards/BTC_USDT.json \
   grafana \
