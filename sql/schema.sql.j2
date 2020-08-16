@@ -1,0 +1,94 @@
+/* vim: set filetype=sql : */
+
+---
+--- schema.sql
+---
+
+CREATE DATABASE grubbin;
+
+\connect grubbin;
+
+
+--
+-- UDFs
+--
+
+CREATE FUNCTION seconds_in_minute_preceding(TIMESTAMPTZ)
+RETURNS SETOF TIMESTAMPTZ
+LANGUAGE SQL STABLE AS $$
+  SELECT generate_series($1 - '59 seconds', $1, '1 second')
+$$;
+
+CREATE FUNCTION seconds_in_minute_succeeding(TIMESTAMPTZ)
+RETURNS SETOF TIMESTAMPTZ
+LANGUAGE SQL STABLE AS $$
+  SELECT generate_series($1, $1 + INTERVAL '59 seconds', INTERVAL '1 second')
+$$;
+
+
+---
+--- Base tables
+---
+
+CREATE TABLE binance_trade (
+  time                TIMESTAMPTZ  NOT NULL,
+  id                  BIGINT       NOT NULL,
+  ingestion_time      TIMESTAMPTZ  NOT NULL,
+  price               DECIMAL      NOT NULL,
+  quantity            DECIMAL      NOT NULL,
+  symbol              TEXT         NOT NULL,
+  buyer_order_id      BIGINT       NOT NULL,
+  seller_order_id     BIGINT       NOT NULL,
+  trade_time          BIGINT       NOT NULL,
+  buyer_market_maker  BIGINT       NOT NULL,
+  PRIMARY KEY(time, id)
+);
+
+CREATE TABLE bitforex_trade (
+  time            TIMESTAMPTZ  NOT NULL,
+  id              BIGINT       NOT NULL,
+  ingestion_time  TIMESTAMPTZ  NOT NULL,
+  price           DECIMAL      NOT NULL,
+  quantity        BIGINT       NOT NULL,
+  direction       BIGINT       NOT NULL,
+  PRIMARY KEY(time, id, ingestion_time)
+);
+
+
+--
+-- Views
+--
+
+{% for exchange in exchanges -%}
+
+CREATE INDEX ON {{ exchange }}_trade (time, quantity, price);
+
+SELECT create_hypertable('{{ exchange }}_trade', 'time');
+
+{% for interval in aggregation_intervals -%}
+{%- set interval_name=interval.replace(" ", "_") -%}
+
+
+CREATE VIEW {{ exchange }}_trade_aggregations_{{ interval_name }}
+WITH (timescaledb.continuous) AS
+SELECT
+  time_bucket(INTERVAL '{{ interval }}', time)  AS _time,
+  count(*)                                      AS _count,
+  sum(quantity)                                 AS _sum,
+  min(price)                                    AS _min,
+  max(price)                                    AS _max,
+  first(price, time)                            AS _first,
+  last(price, time)                             AS _last,
+  avg(price)                                    AS _avg,
+  stddev(price)                                 AS _stddev,
+  stddev_pop(price)                             AS _stddev_pop,
+  stddev_samp(price)                            AS _stddev_samp,
+  variance(price)                               AS _variance,
+  var_pop(price)                                AS _var_pop,
+  var_samp(price)                               AS _var_samp
+FROM {{ exchange }}_trade
+GROUP BY _time;
+
+{% endfor -%}
+
+{%- endfor -%}

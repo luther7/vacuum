@@ -25,9 +25,6 @@ logger = get_logger(__name__)
 @attr.s(auto_attribs=True)
 class Streamer:
     exchange: Exchange
-    table: str
-    api_key: str
-    security_key: str
     create_client: Callable
     create_subscription: Callable
     parser: Callable
@@ -42,7 +39,8 @@ class Streamer:
         self._postgres_connection = await get_postgres_connection()
 
         self._cryptoxlib_client: CryptoXLibClient = self.create_client(
-            self.api_key, self.security_key
+            config["exchanges"][self.exchange.name]["security_key"],
+            config["exchanges"][self.exchange.name]["api_key"],
         )
 
         self._cryptoxlib_client.compose_subscriptions(
@@ -64,7 +62,9 @@ class Streamer:
     async def _insert_trades(self) -> None:
         while True:
             size: int = self._queue.qsize()
-            logger.info("inserting", extra={"exchange": "bitforex", "queue_size": size})
+            logger.info(
+                "inserting", extra={"exchange": self.exchange.name, "queue_size": size}
+            )
 
             if self._queue.empty():
                 await sleep(1)
@@ -72,7 +72,7 @@ class Streamer:
             else:
                 trade: Trade = await self._queue.get()
                 await self._postgres_connection.copy_records_to_table(
-                    self.table, records=[as_postgres_row(trade)]
+                    f"{self.exchange.name}_trades", records=[as_postgres_row(trade)]
                 )
 
     async def run(self) -> None:
@@ -94,9 +94,6 @@ async def binance_parser(response: dict, queue: Queue) -> None:
 @attr.s(auto_attribs=True)
 class BinanceStreamer(Streamer):
     exchange: Exchange = Exchange.binance
-    table: str = "binance_trade"
-    api_key: str = config["binance_api_key"]
-    security_key: str = config["binance_security_key"]
     create_client: Callable = CryptoXLib.create_binance_client
     create_subscription: Callable = BinanceTradeSubscription
     parser: Callable = binance_parser
@@ -111,9 +108,6 @@ async def bitforex_parser(response: dict, queue: Queue) -> None:
 @attr.s(auto_attribs=True)
 class BitforexStreamer(Streamer):
     exchange: Exchange = Exchange.bitforex
-    table: str = "bitforex_trade"
-    api_key: str = config["bitforex_api_key"]
-    security_key: str = config["bitforex_security_key"]
     create_client: Callable = CryptoXLib.create_bitforex_client
     create_subscription: Callable = BitforexTradeSubscription
     parser: Callable = bitforex_parser

@@ -10,14 +10,24 @@ while ! kubectl get pods --namespace grub-bin-bot | grep "timescaledb" | grep "1
   sleep 1
 done
 
+echo "+++ Rendering schema"
+poetry run grubbin template schema
+
 trap 'kill $(jobs -p)' EXIT
 kubectl port-forward --namespace "${namespace}" pod/timescaledb-0 5432:5432 &
 
 sleep 2
+
+echo "+++ Dropping database"
+PGPASSWORD=password psql \
+  --host 127.0.0.1 \
+  --port 5432 \
+  --user postgres \
+  --command "DROP DATABASE IF EXISTS grubbin;"
 
 echo "+++ Seeding database"
 PGPASSWORD=password psql \
   --host 127.0.0.1 \
   --port 5432 \
   --user postgres \
-  --file sql/seed.sql
+  --file sql/schema.sql
