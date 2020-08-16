@@ -4,14 +4,24 @@
 # Other defaults are set in src/grubbin/config.py
 #
 
-binance_api_key: SNIP
-binance_security_key: SNIP
+postgres:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: password
+  database: grubbin
 
-bitforex_api_key: SNIP
-bitforex_security_key: SNIP
+exchanges:
+  binance:
+    api_key: SNIP
+    security_key: SNIP
+  bitforex:
+    api_key: SNIP
+    security_key: SNIP
 
-postgres_host: localhost
-postgres_port: 5432
-postgres_user: postgres
-postgres_password: password
-postgres_database: grubbin
+aggregation_intervals:
+  - "1 minutes"
+  - "3 minutes"
+  - "5 minutes"
+  - "10 minutes"
+  - "30 minutes"
