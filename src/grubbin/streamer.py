@@ -16,7 +16,7 @@ from cryptoxlib.WebsocketMgr import Subscription
 from .config import pairs
 from .inserter import Inserter
 from .logger import get_logger
-from .models import BinanceTrade, Exchange
+from .models import BinanceTrade, BitforexTrade, Exchange
 
 logger = get_logger(__name__)
 
@@ -43,19 +43,26 @@ class Streamer(Inserter):
     async def _parse(
         response: dict, exchange: Exchange, pair: Pair, parser: Callable, queue: Queue
     ) -> None:
-        logger.info(
-            "received",
-            extra={"exchange": exchange.name, "pair": pair, "response": response},
-        )
+        total: int = 0
+
+        def log(message: str):
+            logger.info(
+                message,
+                extra={
+                    "exchange": exchange.name,
+                    "pair": pair,
+                    "response": response,
+                    "total": total,
+                },
+            )
+
+        log("received")
 
         try:
             if "data" in response:
-                parser(response, pair, queue)
+                await parser(response, pair, queue)
         except KeyError as e:
-            logger.info(
-                "malformed response",
-                extra={"exchange": exchange.name, "pair": pair, "response": response},
-            )
+            log("malformed response")
             raise e
 
     async def _aenter(self):
@@ -95,9 +102,9 @@ class BinanceStreamer(Streamer):
     parser: Callable = binance_parser
 
 
-async def bitforex_parser(pair: Pair, response: dict, queue: Queue) -> None:
+async def bitforex_parser(response: dict, pair: Pair, queue: Queue) -> None:
     for t in response["data"]:
-        await queue.put(BinanceTrade.from_websocket_api(pair, t))
+        await queue.put(BitforexTrade.from_websocket_api(pair, t))
 
 
 @attr.s(auto_attribs=True)

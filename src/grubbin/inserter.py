@@ -3,6 +3,7 @@ from typing import Callable
 
 import attr
 from asyncpg import Connection
+from asyncpg.exceptions import UniqueViolationError
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient
 
 from .config import config
@@ -46,34 +47,42 @@ class Inserter:
 
     async def _insert(self) -> None:
         total: int = 0
+        duplicates: int = 0
 
         while True:
+
+            def log(message: str):
+                logger.info(
+                    message,
+                    extra={
+                        "exchange": self.exchange.name,
+                        "total": total,
+                        "duplicates": duplicates,
+                        "queue_size": self._queue_size,
+                    },
+                )
+
             if self._queue.empty():
                 if self._complete:
-                    logger.info(
-                        "exiting",
-                        extra={
-                            "exchange": self.exchange.name,
-                            "total": total,
-                            "queue_size": self._queue_size,
-                        },
-                    )
+                    log("finished inserting")
                     return
 
                 await sleep(2)
                 continue
 
-            logger.info(
-                "inserting",
-                extra={"exchange": self.exchange.name, "queue_size": self._queue_size},
-            )
-
+            log("inserting")
             while not self._queue.empty():
                 trade: Trade = await self._queue.get()
-                await self._postgres_connection.copy_records_to_table(
-                    f"{self.exchange.name}_trade", records=[as_postgres_row(trade)]
-                )
-                total = total + 1
+
+                try:
+                    await self._postgres_connection.copy_records_to_table(
+                        f"{self.exchange.name}_trade", records=[as_postgres_row(trade)]
+                    )
+
+                except UniqueViolationError:
+                    duplicates += 1
+
+                total += 1
 
     async def _gather(self) -> None:
         raise NotImplementedError("Abstract method")

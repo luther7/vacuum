@@ -43,7 +43,7 @@ CREATE TABLE binance_trade (
   trade_time          TIMESTAMPTZ,
   quote_quantity      BIGINT,
   best_match          BIGINT,
-  PRIMARY KEY(time, id, pair, ingestion_time)
+  PRIMARY KEY(time, id, pair, price)
 );
 
 CREATE TABLE bitforex_trade (
@@ -54,7 +54,7 @@ CREATE TABLE bitforex_trade (
   quantity        BIGINT       NOT NULL,
   pair            TEXT         NOT NULL,
   direction       BIGINT       NOT NULL,
-  PRIMARY KEY(time, id, pair, ingestion_time)
+  PRIMARY KEY(time, id, pair, price)
 );
 
 
