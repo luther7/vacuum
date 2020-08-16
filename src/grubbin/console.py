@@ -3,7 +3,7 @@ import asyncio
 import click
 
 from .logger import get_logger
-from .main import stream
+from .streamer import stream
 from .template import schema
 
 logger = get_logger(__name__)
@@ -17,8 +17,8 @@ def main() -> None:
 logger = get_logger(__name__)
 
 
-@main.command("run")
-def _run() -> None:
+@main.command("stream")
+def _stream() -> None:
     asyncio.run(stream())
 
 

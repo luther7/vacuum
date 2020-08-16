@@ -5,9 +5,9 @@ from .config import config
 
 async def get_postgres_connection() -> Connection:
     return await connect(
-        host=config["postgres_host"],
-        port=config["postgres_port"],
-        user=config["postgres_user"],
-        password=config["postgres_password"],
-        database=config["postgres_database"],
+        host=config["postgres"]["host"],
+        port=config["postgres"]["port"],
+        user=config["postgres"]["user"],
+        password=config["postgres"]["password"],
+        database=config["postgres"]["database"],
     )

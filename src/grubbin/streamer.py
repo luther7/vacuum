@@ -22,6 +22,11 @@ from .postgres import get_postgres_connection
 logger = get_logger(__name__)
 
 
+async def stream() -> None:
+    async with BinanceStreamer() as binance, BitforexStreamer() as bitforex:
+        await gather(binance.run(), bitforex.run())
+
+
 @attr.s(auto_attribs=True)
 class Streamer:
     exchange: Exchange
@@ -72,7 +77,7 @@ class Streamer:
             else:
                 trade: Trade = await self._queue.get()
                 await self._postgres_connection.copy_records_to_table(
-                    f"{self.exchange.name}_trades", records=[as_postgres_row(trade)]
+                    f"{self.exchange.name}_trade", records=[as_postgres_row(trade)]
                 )
 
     async def run(self) -> None:
