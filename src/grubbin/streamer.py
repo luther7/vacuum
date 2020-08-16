@@ -1,4 +1,4 @@
-from asyncio import Queue, gather, sleep
+from asyncio import Queue, Task, gather, sleep
 from functools import partial
 from typing import Callable
 
@@ -24,7 +24,13 @@ logger = get_logger(__name__)
 
 async def stream() -> None:
     async with BinanceStreamer() as binance, BitforexStreamer() as bitforex:
-        await gather(binance.run(), bitforex.run())
+        await gather(log_task_count(), binance.run(), bitforex.run())
+
+
+async def log_task_count() -> None:
+    while True:
+        logger.info("tasks", extra={"count": len(Task.all_tasks())})
+        await sleep(2)
 
 
 @attr.s(auto_attribs=True)
@@ -38,8 +44,12 @@ class Streamer:
     _cryptoxlib_client: CryptoXLibClient = None
     _postgres_connection: Connection = None
     _queue: Queue = attr.ib(factory=Queue)
+    _complete: bool = False
+
+    _queue_size: int = 20
 
     async def __aenter__(self):
+        self._queue = Queue(self._queue_size)
         self._postgres_connection = await get_postgres_connection()
 
         self._cryptoxlib_client: CryptoXLibClient = self.create_client(
@@ -64,17 +74,18 @@ class Streamer:
         await self._cryptoxlib_client.close()
         await self._postgres_connection.close()
 
-    async def _insert_trades(self) -> None:
-        while True:
+    async def _insert(self) -> None:
+        while not self._complete:
+            if self._queue.empty():
+                await sleep(2)
+                continue
+
             size: int = self._queue.qsize()
             logger.info(
                 "inserting", extra={"exchange": self.exchange.name, "queue_size": size}
             )
 
-            if self._queue.empty():
-                await sleep(1)
-
-            else:
+            while not self._queue.empty():
                 trade: Trade = await self._queue.get()
                 await self._postgres_connection.copy_records_to_table(
                     f"{self.exchange.name}_trade", records=[as_postgres_row(trade)]
@@ -87,7 +98,7 @@ class Streamer:
         - Feed the queued messaged into Postgres.
         """
         await gather(
-            self._cryptoxlib_client.start_websockets(), self._insert_trades(),
+            self._cryptoxlib_client.start_websockets(), self._insert(),
         )
 
 
@@ -97,7 +108,7 @@ async def binance_parser(response: dict, pair: Pair, queue: Queue) -> None:
     )
 
     try:
-        queue.put_nowait(BinanceTrade.from_websocket_api(pair, response["data"]))
+        await queue.put(BinanceTrade.from_websocket_api(pair, response["data"]))
     except KeyError as e:
         logger.info(
             "malformed response",
@@ -122,7 +133,7 @@ async def bitforex_parser(response: dict, pair: Pair, queue: Queue) -> None:
     try:
         if "data" in response:
             for t in response["data"]:
-                queue.put_nowait(BitforexTrade.from_websocket_api(pair, t))
+                await queue.put(BitforexTrade.from_websocket_api(pair, t))
     except KeyError as e:
         logger.info(
             "malformed response",

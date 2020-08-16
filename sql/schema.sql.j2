@@ -37,10 +37,12 @@ CREATE TABLE binance_trade (
   price               DECIMAL      NOT NULL,
   quantity            DECIMAL      NOT NULL,
   pair                TEXT         NOT NULL,
-  buyer_order_id      BIGINT       NOT NULL,
-  seller_order_id     BIGINT       NOT NULL,
-  trade_time          BIGINT       NOT NULL,
   buyer_market_maker  BIGINT       NOT NULL,
+  buyer_order_id      BIGINT,
+  seller_order_id     BIGINT,
+  trade_time          TIMESTAMPTZ,
+  quote_quantity      BIGINT,
+  best_match          BIGINT,
   PRIMARY KEY(time, id, pair, ingestion_time)
 );
 

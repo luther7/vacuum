@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
+from typing import Optional
 
 import attr
 from cryptoxlib.Pair import Pair
@@ -56,12 +57,16 @@ class BinanceTrade(Trade):
       "m": true,        // Is the buyer the market maker?
       "M": true         // Ignore
     }
+
     """
 
-    buyer_order_id: int
-    seller_order_id: int
-    trade_time: int
     buyer_market_maker: bool
+
+    buyer_order_id: Optional[int] = None
+    seller_order_id: Optional[int] = None
+    trade_time: Optional[datetime] = None
+    quote_quantity: Optional[Decimal] = None
+    best_match: Optional[bool] = None
 
     exchange: Exchange = Exchange.binance
 
@@ -74,10 +79,24 @@ class BinanceTrade(Trade):
             price=Decimal(response["p"]),
             quantity=Decimal(response["q"]),
             pair=str(pair),
+            buyer_market_maker=bool(response["m"]),
             buyer_order_id=int(response["b"]),
             seller_order_id=int(response["a"]),
-            trade_time=int(response["T"]),
-            buyer_market_maker=bool(response["m"]),
+            trade_time=epoch_ms_to_datetime(response["T"]),
+        )
+
+    @classmethod
+    def from_http_api(cls, pair: Pair, response: dict) -> "BinanceTrade":
+        return cls(
+            time=epoch_ms_to_datetime(response["time"]),
+            id=int(response["id"]),
+            ingestion_time=datetime.now(),
+            price=Decimal(response["price"]),
+            quantity=Decimal(response["qty"]),
+            pair=str(pair),
+            buyer_market_maker=bool(response["isBuyerMaker"]),
+            quote_quantity=Decimal(response["quoteQty"]),
+            best_match=bool(response["isBestMatch"]),
         )
 
 
