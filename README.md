@@ -5,7 +5,6 @@
 
 ## TODO
 
-- Historical data
 - Client/server
 - Skaffold
 - Automate Grafana Dashboards
