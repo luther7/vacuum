@@ -5,8 +5,9 @@
 
 ## TODO
 
-- Client/server
-- Skaffold
+- Fix stop endpoint and stream task
+- Add endpoint for fetching historical data
+- Docker/Kube/Skaffold
 - Automate Grafana Dashboards
 
 

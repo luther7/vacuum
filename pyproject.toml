@@ -13,6 +13,7 @@ python-json-logger = "^0.1.11"
 attrs = "19.2"
 jinja2 = "^2.11.2"
 grafanalib = "^0.5.7"
+quart = "^0.13.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
