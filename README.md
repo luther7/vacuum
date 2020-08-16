@@ -5,8 +5,10 @@
 
 ## TODO
 
-- Secrets from environment
-- Handle interrupts
+- Historical data
+- Client/server
+- Skaffold
+- Automate Grafana Dashboards
 
 
 ## Requires

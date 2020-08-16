@@ -16,13 +16,13 @@ CREATE DATABASE grubbin;
 CREATE FUNCTION seconds_in_minute_preceding(TIMESTAMPTZ)
 RETURNS SETOF TIMESTAMPTZ
 LANGUAGE SQL STABLE AS $$
-  SELECT generate_series($1 - '59 seconds', $1, '1 second')
+  SELECT generate_series($1 - INTERVAL '59 seconds', $1, INTERVAL '1 seconds')
 $$;
 
 CREATE FUNCTION seconds_in_minute_succeeding(TIMESTAMPTZ)
 RETURNS SETOF TIMESTAMPTZ
 LANGUAGE SQL STABLE AS $$
-  SELECT generate_series($1, $1 + INTERVAL '59 seconds', INTERVAL '1 second')
+  SELECT generate_series($1, $1 + INTERVAL '59 seconds', INTERVAL '1 seconds')
 $$;
 
 
@@ -36,12 +36,12 @@ CREATE TABLE binance_trade (
   ingestion_time      TIMESTAMPTZ  NOT NULL,
   price               DECIMAL      NOT NULL,
   quantity            DECIMAL      NOT NULL,
-  symbol              TEXT         NOT NULL,
+  pair                TEXT         NOT NULL,
   buyer_order_id      BIGINT       NOT NULL,
   seller_order_id     BIGINT       NOT NULL,
   trade_time          BIGINT       NOT NULL,
   buyer_market_maker  BIGINT       NOT NULL,
-  PRIMARY KEY(time, id)
+  PRIMARY KEY(time, id, pair, ingestion_time)
 );
 
 CREATE TABLE bitforex_trade (
@@ -50,8 +50,9 @@ CREATE TABLE bitforex_trade (
   ingestion_time  TIMESTAMPTZ  NOT NULL,
   price           DECIMAL      NOT NULL,
   quantity        BIGINT       NOT NULL,
+  pair            TEXT         NOT NULL,
   direction       BIGINT       NOT NULL,
-  PRIMARY KEY(time, id, ingestion_time)
+  PRIMARY KEY(time, id, pair, ingestion_time)
 );
 
 
@@ -73,6 +74,7 @@ CREATE VIEW {{ exchange }}_trade_aggregations_{{ interval_name }}
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '{{ interval }}', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -87,7 +89,7 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM {{ exchange }}_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 {% endfor -%}
 

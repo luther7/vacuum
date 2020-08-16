@@ -14,7 +14,7 @@ from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient
 from cryptoxlib.Pair import Pair
 
-from .config import config, default_pair
+from .config import config, pairs
 from .logger import get_logger
 from .models import BinanceTrade, BitforexTrade, Exchange, Trade, as_postgres_row
 from .postgres import get_postgres_connection
@@ -33,7 +33,6 @@ class Streamer:
     create_client: Callable
     create_subscription: Callable
     parser: Callable
-    pair: Pair = default_pair
     subscription_args: dict = {}
 
     _cryptoxlib_client: CryptoXLibClient = None
@@ -51,10 +50,11 @@ class Streamer:
         self._cryptoxlib_client.compose_subscriptions(
             [
                 self.create_subscription(
-                    pair=self.pair,
+                    pair=p,
                     **self.subscription_args,
-                    callbacks=[partial(self.parser, queue=self._queue)],
+                    callbacks=[partial(self.parser, pair=p, queue=self._queue)],
                 )
+                for p in pairs
             ]
         )
 
@@ -91,9 +91,19 @@ class Streamer:
         )
 
 
-async def binance_parser(response: dict, queue: Queue) -> None:
-    logger.info("received", extra={"exchange": "binance"})
-    queue.put_nowait(BinanceTrade.from_websocket_api(response["data"]))
+async def binance_parser(response: dict, pair: Pair, queue: Queue) -> None:
+    logger.info(
+        "received", extra={"exchange": "binance", "pair": pair, "response": response}
+    )
+
+    try:
+        queue.put_nowait(BinanceTrade.from_websocket_api(pair, response["data"]))
+    except KeyError as e:
+        logger.info(
+            "malformed response",
+            extra={"exchange": "bitforex", "pair": pair, "response": response},
+        )
+        raise e
 
 
 @attr.s(auto_attribs=True)
@@ -104,10 +114,21 @@ class BinanceStreamer(Streamer):
     parser: Callable = binance_parser
 
 
-async def bitforex_parser(response: dict, queue: Queue) -> None:
-    logger.info("received", extra={"exchange": "bitforex"})
-    for t in response["data"]:
-        queue.put_nowait(BitforexTrade.from_websocket_api(t))
+async def bitforex_parser(response: dict, pair: Pair, queue: Queue) -> None:
+    logger.info(
+        "received", extra={"exchange": "bitforex", "pair": pair, "response": response}
+    )
+
+    try:
+        if "data" in response:
+            for t in response["data"]:
+                queue.put_nowait(BitforexTrade.from_websocket_api(pair, t))
+    except KeyError as e:
+        logger.info(
+            "malformed response",
+            extra={"exchange": "bitforex", "pair": pair, "response": response},
+        )
+        raise e
 
 
 @attr.s(auto_attribs=True)

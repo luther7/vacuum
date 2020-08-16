@@ -3,6 +3,7 @@ from decimal import Decimal
 from enum import Enum
 
 import attr
+from cryptoxlib.Pair import Pair
 
 from .utilities import epoch_ms_to_datetime
 
@@ -24,6 +25,7 @@ class Trade:
     ingestion_time: datetime
     price: Decimal
     quantity: Decimal
+    pair: str
 
 
 def as_postgres_row(trade: Trade) -> tuple:
@@ -56,7 +58,6 @@ class BinanceTrade(Trade):
     }
     """
 
-    symbol: str
     buyer_order_id: int
     seller_order_id: int
     trade_time: int
@@ -65,14 +66,14 @@ class BinanceTrade(Trade):
     exchange: Exchange = Exchange.binance
 
     @classmethod
-    def from_websocket_api(cls, response: dict) -> "BinanceTrade":
+    def from_websocket_api(cls, pair: Pair, response: dict) -> "BinanceTrade":
         return cls(
             time=epoch_ms_to_datetime(response["E"]),
             id=int(response["t"]),
             ingestion_time=datetime.now(),
             price=Decimal(response["p"]),
             quantity=Decimal(response["q"]),
-            symbol=response["s"],
+            pair=str(pair),
             buyer_order_id=int(response["b"]),
             seller_order_id=int(response["a"]),
             trade_time=int(response["T"]),
@@ -104,12 +105,13 @@ class BitforexTrade(Trade):
     exchange: Exchange = Exchange.bitforex
 
     @classmethod
-    def from_websocket_api(cls, response: dict) -> "BitforexTrade":
+    def from_websocket_api(cls, pair: Pair, response: dict) -> "BitforexTrade":
         return cls(
             time=epoch_ms_to_datetime(response["time"]),
             id=int(response["tid"]),
             ingestion_time=datetime.now(),
             price=Decimal(response["price"]),
             quantity=Decimal(response["amount"]),
+            pair=str(pair),
             direction=int(response["direction"]),
         )

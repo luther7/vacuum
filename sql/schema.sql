@@ -16,13 +16,13 @@ CREATE DATABASE grubbin;
 CREATE FUNCTION seconds_in_minute_preceding(TIMESTAMPTZ)
 RETURNS SETOF TIMESTAMPTZ
 LANGUAGE SQL STABLE AS $$
-  SELECT generate_series($1 - '59 seconds', $1, '1 second')
+  SELECT generate_series($1 - INTERVAL '59 seconds', $1, INTERVAL '1 seconds')
 $$;
 
 CREATE FUNCTION seconds_in_minute_succeeding(TIMESTAMPTZ)
 RETURNS SETOF TIMESTAMPTZ
 LANGUAGE SQL STABLE AS $$
-  SELECT generate_series($1, $1 + INTERVAL '59 seconds', INTERVAL '1 second')
+  SELECT generate_series($1, $1 + INTERVAL '59 seconds', INTERVAL '1 seconds')
 $$;
 
 
@@ -36,12 +36,12 @@ CREATE TABLE binance_trade (
   ingestion_time      TIMESTAMPTZ  NOT NULL,
   price               DECIMAL      NOT NULL,
   quantity            DECIMAL      NOT NULL,
-  symbol              TEXT         NOT NULL,
+  pair                TEXT         NOT NULL,
   buyer_order_id      BIGINT       NOT NULL,
   seller_order_id     BIGINT       NOT NULL,
   trade_time          BIGINT       NOT NULL,
   buyer_market_maker  BIGINT       NOT NULL,
-  PRIMARY KEY(time, id)
+  PRIMARY KEY(time, id, pair, ingestion_time)
 );
 
 CREATE TABLE bitforex_trade (
@@ -50,8 +50,9 @@ CREATE TABLE bitforex_trade (
   ingestion_time  TIMESTAMPTZ  NOT NULL,
   price           DECIMAL      NOT NULL,
   quantity        BIGINT       NOT NULL,
+  pair            TEXT         NOT NULL,
   direction       BIGINT       NOT NULL,
-  PRIMARY KEY(time, id, ingestion_time)
+  PRIMARY KEY(time, id, pair, ingestion_time)
 );
 
 
@@ -67,6 +68,7 @@ CREATE VIEW binance_trade_aggregations_1_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '1 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -81,12 +83,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM binance_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW binance_trade_aggregations_3_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '3 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -101,12 +104,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM binance_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW binance_trade_aggregations_5_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '5 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -121,12 +125,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM binance_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW binance_trade_aggregations_10_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '10 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -141,12 +146,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM binance_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW binance_trade_aggregations_30_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '30 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -161,7 +167,28 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM binance_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
+
+CREATE VIEW binance_trade_aggregations_60_minutes
+WITH (timescaledb.continuous) AS
+SELECT
+  time_bucket(INTERVAL '60 minutes', time)  AS _time,
+  pair                                          AS _pair,
+  count(*)                                      AS _count,
+  sum(quantity)                                 AS _sum,
+  min(price)                                    AS _min,
+  max(price)                                    AS _max,
+  first(price, time)                            AS _first,
+  last(price, time)                             AS _last,
+  avg(price)                                    AS _avg,
+  stddev(price)                                 AS _stddev,
+  stddev_pop(price)                             AS _stddev_pop,
+  stddev_samp(price)                            AS _stddev_samp,
+  variance(price)                               AS _variance,
+  var_pop(price)                                AS _var_pop,
+  var_samp(price)                               AS _var_samp
+FROM binance_trade
+GROUP BY _time, _pair;
 
 CREATE INDEX ON bitforex_trade (time, quantity, price);
 
@@ -171,6 +198,7 @@ CREATE VIEW bitforex_trade_aggregations_1_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '1 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -185,12 +213,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM bitforex_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW bitforex_trade_aggregations_3_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '3 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -205,12 +234,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM bitforex_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW bitforex_trade_aggregations_5_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '5 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -225,12 +255,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM bitforex_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW bitforex_trade_aggregations_10_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '10 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -245,12 +276,13 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM bitforex_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
 
 CREATE VIEW bitforex_trade_aggregations_30_minutes
 WITH (timescaledb.continuous) AS
 SELECT
   time_bucket(INTERVAL '30 minutes', time)  AS _time,
+  pair                                          AS _pair,
   count(*)                                      AS _count,
   sum(quantity)                                 AS _sum,
   min(price)                                    AS _min,
@@ -265,4 +297,25 @@ SELECT
   var_pop(price)                                AS _var_pop,
   var_samp(price)                               AS _var_samp
 FROM bitforex_trade
-GROUP BY _time;
+GROUP BY _time, _pair;
+
+CREATE VIEW bitforex_trade_aggregations_60_minutes
+WITH (timescaledb.continuous) AS
+SELECT
+  time_bucket(INTERVAL '60 minutes', time)  AS _time,
+  pair                                          AS _pair,
+  count(*)                                      AS _count,
+  sum(quantity)                                 AS _sum,
+  min(price)                                    AS _min,
+  max(price)                                    AS _max,
+  first(price, time)                            AS _first,
+  last(price, time)                             AS _last,
+  avg(price)                                    AS _avg,
+  stddev(price)                                 AS _stddev,
+  stddev_pop(price)                             AS _stddev_pop,
+  stddev_samp(price)                            AS _stddev_samp,
+  variance(price)                               AS _variance,
+  var_pop(price)                                AS _var_pop,
+  var_samp(price)                               AS _var_samp
+FROM bitforex_trade
+GROUP BY _time, _pair;

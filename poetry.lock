@@ -60,7 +60,7 @@ description = "Classes Without Boilerplate"
 name = "attrs"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "19.3.0"
+version = "19.2.0"
 
 [package.extras]
 azure-pipelines = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "pytest-azurepipelines"]
@@ -174,6 +174,20 @@ version = "3.8.3"
 mccabe = ">=0.6.0,<0.7.0"
 pycodestyle = ">=2.6.0a1,<2.7.0"
 pyflakes = ">=2.2.0,<2.3.0"
+
+[[package]]
+category = "main"
+description = "Library for building Grafana dashboards"
+name = "grafanalib"
+optional = false
+python-versions = "*"
+version = "0.5.7"
+
+[package.dependencies]
+attrs = "19.2"
+
+[package.extras]
+dev = ["flake8", "pytest"]
 
 [[package]]
 category = "dev"
@@ -526,7 +540,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "fbe8af6cc125b850eeaeda471e97f939766034e63d3740842bb45bc223e0e0a7"
+content-hash = "5967e281c5cc59f8305f581e0b117a7845dd43920c1ed9e67117e1a0bbbc563a"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -585,8 +599,8 @@ atomicwrites = [
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
 ]
 attrs = [
-    {file = "attrs-19.3.0-py2.py3-none-any.whl", hash = "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c"},
-    {file = "attrs-19.3.0.tar.gz", hash = "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"},
+    {file = "attrs-19.2.0-py2.py3-none-any.whl", hash = "sha256:ec20e7a4825331c1b5ebf261d111e16fa9612c1f7a5e1f884f12bd53a664dfd2"},
+    {file = "attrs-19.2.0.tar.gz", hash = "sha256:f913492e1663d3c36f502e5e9ba6cd13cf19d7fab50aa13239e420fef95e1396"},
 ]
 black = [
     {file = "black-19.10b0-py36-none-any.whl", hash = "sha256:1b30e59be925fafc1ee4565e5e08abef6b03fe455102883820fe5ee2e4734e0b"},
@@ -659,6 +673,10 @@ filelock = [
 flake8 = [
     {file = "flake8-3.8.3-py2.py3-none-any.whl", hash = "sha256:15e351d19611c887e482fb960eae4d44845013cc142d42896e9862f775d8cf5c"},
     {file = "flake8-3.8.3.tar.gz", hash = "sha256:f04b9fcbac03b0a3e58c0ab3a0ecc462e023a9faf046d57794184028123aa208"},
+]
+grafanalib = [
+    {file = "grafanalib-0.5.7-py3-none-any.whl", hash = "sha256:6e96b568ac8af22575b0bc2bb452dc78e32ce76e2fd8c94dd6713e473139409f"},
+    {file = "grafanalib-0.5.7.tar.gz", hash = "sha256:a9cc19112feaaf40605e2dcd5e1f143c5f1dd26235155516ee3d1c3903429aec"},
 ]
 identify = [
     {file = "identify-1.4.26-py2.py3-none-any.whl", hash = "sha256:150e7c679d6c12e67d18a63808f59068e98576b9ab1fd0ebfcc013c885c5f2e7"},
