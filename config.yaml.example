@@ -19,9 +19,24 @@ exchanges:
     api_key: SNIP
     security_key: SNIP
 
+pairs:
+  - "BTC/USDT"
+  - "LINK/USDT"
+  - "ETH/USDT"
+  - "EOS/USDT"
+  - "XRP/USDT"
+  - "LTC/USDT"
+  - "BUSD/USDT"
+  - "BCH/USDT"
+  - "SXP/USDT"
+  - "BNB/USDT"
+  - "XTZ/USDT"
+  - "CRV/USDT"
+
 aggregation_intervals:
   - "1 minutes"
   - "3 minutes"
   - "5 minutes"
   - "10 minutes"
   - "30 minutes"
+  - "60 minutes"
