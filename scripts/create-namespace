@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+
+namespace=grub-bin-bot
+
+
+if ! kubectl get namespaces | grep "${namespace}" >/dev/null; then
+  echo "+++ Create namespace ${namespace}"
+  kubectl create namespace "${namespace}"
+fi

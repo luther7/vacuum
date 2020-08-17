@@ -1,0 +1,52 @@
+apiVersion: skaffold/v2beta6
+kind: Config
+build:
+  artifacts:
+  - image: grubbin
+    docker:
+      target: dev
+  local:
+    useBuildkit: true
+deploy:
+  kubectl:
+    manifests:
+      - charts/timescaledb-secrets
+    flags:
+      global:
+        - --namespace=grub-bin-bot
+  helm:
+    releases:
+      - chartPath: charts/grubbin
+        namespace: grub-bin-bot
+        name: grubbin
+        artifactOverrides:
+          image: grubbin
+      - chartPath: charts/timescaledb-single
+        namespace: grub-bin-bot
+        name: timescaledb
+        valuesFiles:
+          - charts/timescaledb.yaml
+      - chartPath: stable/grafana
+        namespace: grub-bin-bot
+        name: grafana
+        remote: true
+        valuesFiles:
+          - charts/grafana.yaml
+        # setFiles:
+        #   dashboards.default.BTC_USDT.json: dashboards/BTC_USDT.json
+portForward:
+  - namespace: grub-bin-bot
+    resourceType: service
+    resourceName: grubbin
+    port: 80
+    localPort: 5000
+  - namespace: grub-bin-bot
+    resourceType: pod
+    resourceName: timescaledb-0
+    port: 5432
+    localPort: 5432
+  - namespace: grub-bin-bot
+    resourceType: service
+    resourceName: grafana
+    port: 80
+    localPort: 3000

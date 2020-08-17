@@ -6,6 +6,5 @@ echo "+++ Deleting Minikube"
 minikube delete
 
 ./scripts/minikube-start
-./scripts/install-charts
-./scripts/seed-database
-./scripts/forward-ports
+./scripts/create-namespace
+./scripts/skaffold-dev

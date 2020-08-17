@@ -60,5 +60,5 @@ async def stop():
     return {"success": True}
 
 
-def serve() -> None:
-    app.run()
+def webserver() -> None:
+    app.run(host="0.0.0.0", port=80)

@@ -4,15 +4,18 @@
 ---
 
 ## TODO
-
-- Fix stop endpoint and stream task
+- Fix stop endpoint
+- Fix stream task to handle stops
 - Add endpoint for fetching historical data
-- Docker/Kube/Skaffold
+- Add the config as a configmap in the Helm chart
 - Automate Grafana Dashboards
 
 
 ## Requires
 - Minikube
+- Kubectl
+- Kustomize
+- Skaffold
 - Poetry
 - Binance API Key
 - Bitforex API Key
@@ -25,14 +28,21 @@
 scripts/prepare-charts
 ```
 
-- Provsions Minikube with TimescaleDB and Grafana, and forward ports:
+- Provsions Minikube, deploys Kubernetes resources with Skaffold and forwards ports:
 ```
 scripts/reprovision
 ```
 
-- Run script to pull Candle data and push to Timescale:
+- Seed the database:
 ```
-poetry run grubbin run
+scripts/seed-database
+```
+
+- Interact via HTTP API:
+```
+http localhost:5000/start
+http localhost:5000/stop
+http localhost:5000/status
 ```
 
 - Log into Grafana at `localhost:3000` (username: admin, password: password).

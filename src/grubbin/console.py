@@ -6,7 +6,7 @@ from .fetcher import fetch
 from .logger import get_logger
 from .streamer import stream
 from .template import schema
-from .webserver import serve
+from .webserver import webserver
 
 logger = get_logger(__name__)
 
@@ -16,9 +16,9 @@ def main() -> None:
     pass
 
 
-@main.command("serve")
-def _serve() -> None:
-    serve()
+@main.command("webserver")
+def _webserver() -> None:
+    webserver()
 
 
 @main.command("stream")
