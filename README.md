@@ -4,10 +4,12 @@
 ---
 
 ## TODO
+- Fix Timescale secrets
+- Rename - `grub-bin-bot` and `grubbin` to `vacuum`
+- Add the config as a configmap in the Helm chart
 - Fix stop endpoint
 - Fix stream task to handle stops
 - Add endpoint for fetching historical data
-- Add the config as a configmap in the Helm chart
 - Automate Grafana Dashboards
 
 

@@ -14,6 +14,7 @@ deploy:
     flags:
       global:
         - --namespace=grub-bin-bot
+        - --kustomize=charts/timescaledb-secrets
   helm:
     releases:
       - chartPath: charts/grubbin
