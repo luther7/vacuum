@@ -2,9 +2,13 @@ apiVersion: skaffold/v2beta6
 kind: Config
 build:
   artifacts:
-  - image: vacuum
-    docker:
-      target: dev
+    - image: vacuum
+      docker:
+        target: dev
+      sync:
+        manual:
+          - src: "src/vacuum/*"
+            dest: /app
   local:
     useBuildkit: true
 deploy:
@@ -44,7 +48,7 @@ portForward:
     localPort: 5000
   - namespace: vacuum
     resourceType: pod
-    resourceName: timescaledb-0
+    resourceName: statefulset
     port: 5432
     localPort: 5432
   - namespace: vacuum

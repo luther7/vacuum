@@ -5,7 +5,7 @@
 #
 
 postgres:
-  host: localhost
+  host: timescaledb.vacuum
   port: 5432
   user: postgres
   password: password
