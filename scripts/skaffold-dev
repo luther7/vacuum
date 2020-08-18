@@ -6,5 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 namespace=vacuum
 
 
+./scripts/create-namespace
+
 echo "+++ Skaffold"
 skaffold dev --port-forward

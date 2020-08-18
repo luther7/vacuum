@@ -23,7 +23,7 @@
 
 Copy and edit the example config:
 ```
-cp config-example.yaml config
+cp config-example.yaml config.yaml
 $EDITOR config.yaml
 ```
 
@@ -32,9 +32,14 @@ Prepare Helm Charts:
 ./scripts/prepare-charts
 ```
 
-Provsion Minikube, deploy Kubernetes resources with Skaffold, forwards ports:
+Start Minikube:
 ```
-./scripts/reprovision
+./scripts/minikube-start
+```
+
+Deploy with Skaffold and forwards ports:
+```
+./scripts/skaffold-dev
 ```
 
 Seed the database:
@@ -42,13 +47,13 @@ Seed the database:
 ./scripts/seed-database
 ```
 
-Interact via HTTP API:
+Log into Grafana at `localhost:3000` (username: admin, password: password).
+
+Interact via the HTTP API:
 ```
 http localhost:5000/start
 http localhost:5000/stop
 http localhost:5000/status
 ```
-
-Log into Grafana at `localhost:3000` (username: admin, password: password).
 
 More scripts in `./scripts`
