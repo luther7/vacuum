@@ -3,7 +3,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 
-namespace=grub-bin-bot
+namespace=vacuum
 
 echo "+++ Add stable helm repo"
 helm repo add stable https://kubernetes-charts.storage.googleapis.com
@@ -30,3 +30,8 @@ PATRONI_SUPERUSER_PASSWORD=password
 PATRONI_REPLICATION_PASSWORD=password
 PATRONI_admin_PASSWORD=password
 EOF
+
+echo "+++ Output timescaledb-single chart secrets to work around Skaffold"
+kubectl kustomize \
+  charts/timescaledb-secrets \
+  > charts/timescaledb-secrets.yaml

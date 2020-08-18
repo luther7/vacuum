@@ -22,4 +22,5 @@ htmlcov/
 config.yaml
 charts/timescaledb-single
 charts/timescaledb-secrets
+charts/timescaledb-secrets.yaml
 sql/schema.sql

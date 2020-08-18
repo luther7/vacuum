@@ -1,7 +1,7 @@
 ---
 
 #
-# Other defaults are set in src/grubbin/config.py
+# Other defaults are set in src/vacuum/config.py
 #
 
 postgres:
@@ -9,7 +9,7 @@ postgres:
   port: 5432
   user: postgres
   password: password
-  database: grubbin
+  database: vacuum
 
 exchanges:
   binance:

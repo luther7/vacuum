@@ -1,50 +1,53 @@
-# Grub's Bin-Bot
-![Tests](https://github.com/rubberydub/grub-bin-bot/workflows/tests/badge.svg)
+# Vacuum
+![Tests](https://github.com/rubberydub/vacuum/workflows/tests/badge.svg)
 
 ---
 
 ## TODO
-- Fix Timescale secrets
-- Rename - `grub-bin-bot` and `grubbin` to `vacuum`
-- Add the config as a configmap in the Helm chart
-- Fix stop endpoint
 - Fix stream task to handle stops
-- Add endpoint for fetching historical data
+- Fix stop endpoint
 - Automate Grafana Dashboards
+- Add endpoint for fetching historical data
 
 
 ## Requires
 - Minikube
 - Kubectl
-- Kustomize
 - Skaffold
-- Poetry
 - Binance API Key
 - Bitforex API Key
 
 
 ## Usage
 
-- Prepare Helm Charts:
+Copy and edit the example config:
 ```
-scripts/prepare-charts
-```
-
-- Provsions Minikube, deploys Kubernetes resources with Skaffold and forwards ports:
-```
-scripts/reprovision
+cp config-example.yaml config
+$EDITOR config.yaml
 ```
 
-- Seed the database:
+Prepare Helm Charts:
 ```
-scripts/seed-database
+./scripts/prepare-charts
 ```
 
-- Interact via HTTP API:
+Provsion Minikube, deploy Kubernetes resources with Skaffold, forwards ports:
+```
+./scripts/reprovision
+```
+
+Seed the database:
+```
+./scripts/seed-database
+```
+
+Interact via HTTP API:
 ```
 http localhost:5000/start
 http localhost:5000/stop
 http localhost:5000/status
 ```
 
-- Log into Grafana at `localhost:3000` (username: admin, password: password).
+Log into Grafana at `localhost:3000` (username: admin, password: password).
+
+More scripts in `./scripts`

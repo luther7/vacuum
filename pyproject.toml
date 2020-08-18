@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "grubbin"
-description = "Grub's Bin-Bot"
+name = "vacuum"
+description = "Vacuum"
 authors = ["Franz Neulist Carroll <franzneulistcarroll@gmail.com>"]
 version = "0.1.0"
 
@@ -25,7 +25,7 @@ isort = "^4.3.21"
 flake8 = "^3.8.3"
 
 [tool.poetry.scripts]
-grubbin = "grubbin.console:main"
+vacuum = "vacuum.console:main"
 
 [build-system]
 requires = ["poetry>=1"]

@@ -4,4 +4,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 
 ./scripts/docker-build "${1:-dev}"
-docker run --interactive --tty --rm grubbin
+docker run --interactive --tty --rm vacuum

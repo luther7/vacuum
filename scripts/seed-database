@@ -3,15 +3,15 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 
-namespace=grub-bin-bot
+namespace=vacuum
 
 echo "+++ Waiting for timescaledb..."
-while ! kubectl get pods --namespace grub-bin-bot | grep "timescaledb" | grep "1/1" >/dev/null; do
+while ! kubectl get pods --namespace vacuum | grep "timescaledb" | grep "1/1" >/dev/null; do
   sleep 1
 done
 
 echo "+++ Rendering schema"
-poetry run grubbin template schema
+poetry run vacuum template schema
 
 trap 'kill $(jobs -p)' EXIT
 kubectl port-forward --namespace "${namespace}" pod/timescaledb-0 5432:5432 &
@@ -23,7 +23,7 @@ PGPASSWORD=password psql \
   --host 127.0.0.1 \
   --port 5432 \
   --user postgres \
-  --command "DROP DATABASE IF EXISTS grubbin;"
+  --command "DROP DATABASE IF EXISTS vacuum;"
 
 echo "+++ Seeding database"
 PGPASSWORD=password psql \

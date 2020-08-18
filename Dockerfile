@@ -19,7 +19,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["grubbin", "webserver"]
+CMD ["vacuum", "webserver"]
 
 COPY poetry.lock pyproject.toml /app/
 

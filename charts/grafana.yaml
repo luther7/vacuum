@@ -324,8 +324,8 @@ datasources:
     datasources:
     - name: timescaledb
       type: postgres
-      url: timescaledb.grub-bin-bot:5432
-      database: grubbin
+      url: timescaledb.vacuum:5432
+      database: vacuum
       user: postgres
       secureJsonData:
         password: password

@@ -1,7 +1,7 @@
 # import pytest
 
 # from click.testing import CliRunner
-# from grubbin.console import main
+# from vacuum.console import main
 
 
 def test_example():

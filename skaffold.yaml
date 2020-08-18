@@ -2,7 +2,7 @@ apiVersion: skaffold/v2beta6
 kind: Config
 build:
   artifacts:
-  - image: grubbin
+  - image: vacuum
     docker:
       target: dev
   local:
@@ -10,25 +10,26 @@ build:
 deploy:
   kubectl:
     manifests:
-      - charts/timescaledb-secrets
+      - charts/timescaledb-secrets.yaml
     flags:
       global:
-        - --namespace=grub-bin-bot
-        - --kustomize=charts/timescaledb-secrets
+        - --namespace=vacuum
   helm:
     releases:
-      - chartPath: charts/grubbin
-        namespace: grub-bin-bot
-        name: grubbin
+      - chartPath: charts/vacuum
+        namespace: vacuum
+        name: vacuum
         artifactOverrides:
-          image: grubbin
+          image: vacuum
+        setFiles:
+          config: config.yaml
       - chartPath: charts/timescaledb-single
-        namespace: grub-bin-bot
+        namespace: vacuum
         name: timescaledb
         valuesFiles:
           - charts/timescaledb.yaml
       - chartPath: stable/grafana
-        namespace: grub-bin-bot
+        namespace: vacuum
         name: grafana
         remote: true
         valuesFiles:
@@ -36,17 +37,17 @@ deploy:
         # setFiles:
         #   dashboards.default.BTC_USDT.json: dashboards/BTC_USDT.json
 portForward:
-  - namespace: grub-bin-bot
+  - namespace: vacuum
     resourceType: service
-    resourceName: grubbin
+    resourceName: vacuum
     port: 80
     localPort: 5000
-  - namespace: grub-bin-bot
+  - namespace: vacuum
     resourceType: pod
     resourceName: timescaledb-0
     port: 5432
     localPort: 5432
-  - namespace: grub-bin-bot
+  - namespace: vacuum
     resourceType: service
     resourceName: grafana
     port: 80
