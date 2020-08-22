@@ -91,11 +91,6 @@ class Inserter:
             while not self._queue.empty():
                 trade: Trade = await self._queue.get()
 
-
-
-
-
-fflefhlehfelj
                 try:
                     await self._postgres_connection.copy_records_to_table(
                         f"{self.exchange.name}_trade", records=[as_postgres_row(trade)]
