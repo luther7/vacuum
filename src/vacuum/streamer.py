@@ -1,4 +1,4 @@
-from asyncio import Queue, Task, gather, sleep
+from asyncio import Queue, gather
 from functools import partial
 from typing import Callable, Dict, List
 
@@ -23,13 +23,7 @@ logger = get_logger(__name__)
 
 async def stream() -> None:
     async with BinanceStreamer() as binance, BitforexStreamer() as bitforex:
-        await gather(log_task_count(), binance.run(), bitforex.run())
-
-
-async def log_task_count() -> None:
-    while True:
-        logger.info("tasks", extra={"count": len(Task.all_tasks())})
-        await sleep(2)
+        await gather(binance.run(), bitforex.run())
 
 
 @attr.s(auto_attribs=True)
@@ -49,6 +43,7 @@ class Streamer(Inserter):
             logger.info(
                 message,
                 extra={
+                    "kind": "Streamer",
                     "exchange": exchange.name,
                     "pair": pair,
                     "response": response,

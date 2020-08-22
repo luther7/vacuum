@@ -9,4 +9,4 @@ namespace=vacuum
 ./scripts/create-namespace
 
 echo "+++ Skaffold"
-skaffold dev --port-forward
+skaffold dev --verbosity=error --port-forward

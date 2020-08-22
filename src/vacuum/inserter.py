@@ -1,4 +1,4 @@
-from asyncio import Queue, gather, sleep
+from asyncio import Queue, gather, sleep, CancelledError
 from typing import Callable
 
 import attr
@@ -41,9 +41,25 @@ class Inserter:
         )
 
     async def run(self) -> None:
-        await gather(
-            self._gather(), self._insert(),
-        )
+        def log(message: str):
+            logger.info(
+                message,
+                extra={
+                    "kind": self.__class__.__name__,
+                    "exchange": self.exchange.name,
+                    "queue_size": self._queue_size,
+                },
+            )
+
+        log("starting")
+        try:
+            await gather(
+                self._gather(), self._insert(),
+            )
+        except CancelledError:
+            log("cancelled")
+            log("inserting remaining enqueued")
+            await self._insert()
 
     async def _insert(self) -> None:
         total: int = 0
@@ -55,6 +71,7 @@ class Inserter:
                 logger.info(
                     message,
                     extra={
+                        "kind": self.__class__.__name__,
                         "exchange": self.exchange.name,
                         "total": total,
                         "duplicates": duplicates,

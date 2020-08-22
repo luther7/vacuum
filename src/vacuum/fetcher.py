@@ -1,4 +1,3 @@
-from asyncio import Task, gather, sleep
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Optional
@@ -19,14 +18,7 @@ logger = get_logger(__name__)
 
 async def fetch() -> None:
     async with BinanceFetcher() as binance:
-        # await gather(log_task_count(), binance.run())
-        await gather(binance.run())
-
-
-async def log_task_count() -> None:
-    while True:
-        logger.info("tasks", extra={"count": len(Task.all_tasks())})
-        await sleep(2)
+        await binance.run()
 
 
 @dataclass
@@ -77,6 +69,7 @@ class Fetcher(Inserter):
                 logger.info(
                     message,
                     extra={
+                        "kind": "Streamer",
                         "exchange": self.exchange.name,
                         "pair": self._pair,
                         "index": i,
