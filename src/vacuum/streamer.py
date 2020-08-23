@@ -21,6 +21,9 @@ from .models import BinanceTrade, BitforexTrade, Exchange
 logger = get_logger(__name__)
 
 
+STREAMING_TASK_NAME: str = "streaming"
+
+
 async def stream() -> None:
     async with BinanceStreamer() as binance, BitforexStreamer() as bitforex:
         await gather(binance.run(), bitforex.run())
