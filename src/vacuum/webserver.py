@@ -1,4 +1,4 @@
-from asyncio import AbstractEventLoop, get_event_loop, Task
+from asyncio import AbstractEventLoop, Task, get_event_loop
 from dataclasses import asdict
 from datetime import datetime
 from typing import Tuple
@@ -6,8 +6,8 @@ from typing import Tuple
 from quart import Quart, request
 
 from .logger import get_logger, set_quart_logger_formatter
-from .streamer import stream
 from .state import state
+from .streamer import stream
 
 logger = get_logger(__name__)
 app = Quart(__name__)

@@ -7,8 +7,6 @@ from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
 
 from .inserter import Inserter
-
-# from .config import config, pairs
 from .logger import get_logger
 from .models import BinanceTrade, Exchange
 from .utilities import epoch_ms_to_datetime

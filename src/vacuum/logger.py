@@ -1,8 +1,7 @@
 import logging
+from logging import Logger, StreamHandler, getLogger
 
 from pythonjsonlogger.jsonlogger import JsonFormatter
-
-from logging import Logger, getLogger, StreamHandler
 from quart.logging import default_handler, serving_handler
 
 

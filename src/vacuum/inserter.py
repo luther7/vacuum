@@ -1,4 +1,4 @@
-from asyncio import Queue, gather, sleep, CancelledError
+from asyncio import CancelledError, Queue, gather, sleep
 from typing import Callable
 
 import attr
