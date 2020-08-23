@@ -4,9 +4,6 @@
 ---
 
 ## TODO
-- Add JSON error handler to API
-- Fix stream task to handle stops
-- Fix stop endpoint
 - Automate Grafana Dashboards
 - Add endpoint for fetching historical data
 
