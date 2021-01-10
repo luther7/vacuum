@@ -5,9 +5,9 @@ Crypto trading bot. Uses Python, Tulip Indicators (TODO), TimescaleDB, Grafana a
 ## WORK IN PROGRESS
 
 In it's current state, Vacuum will consume real-time trading data from Binance and Bitforex, and
-can fetch historical data from Binance. It is controlled with an API. It will insert this data into
-TimescaleDB, including continuous aggregations. The trading data is visualized in Grafana. These
-features are almost complete, with the remaining work listed below.
+can fetch historical data from Binance. It is controlled with a HTTP API. It will insert this data
+into TimescaleDB, including continuous aggregations. The trading data is visualized in Grafana.
+These features are almost complete, with the remaining work listed below.
 
 Future features include using Tulip Indicators to build trading algorithms, and a mock wallet and
 visualizations to test them.
