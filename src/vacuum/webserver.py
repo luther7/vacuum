@@ -110,6 +110,7 @@ async def stop() -> dict:
     for task in Task.all_tasks():
         if task.get_name() == STREAMING_TASK_NAME:
             task.cancel()
+            break
 
     state.streaming = False
 
